@@ -50,7 +50,7 @@ function WelcomePage() {
               onClick={() => openModal('sign_up')}
               className="btn btn-primary text-xl px-12 py-5 glow-emerald"
             >
-              🚀 Start Creating Free
+              Start Creating Free
             </button>
             <button
               onClick={() => openModal('sign_in')}
@@ -81,7 +81,7 @@ function WelcomePage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-white mb-6">Why Choose Forms App?</h2>
+            <h2 className="text-5xl font-bold text-white mb-6">Why Choose FORMCRAFT AI?</h2>
             <p className="text-xl text-white/70 max-w-3xl mx-auto">
               Powered by AI and designed for modern workflows
             </p>
@@ -164,7 +164,7 @@ function WelcomePage() {
           <div className="card glow-emerald">
             <h2 className="text-4xl font-bold text-white mb-6">Ready to Get Started?</h2>
             <p className="text-xl text-white/80 mb-8">
-              Join thousands of users who trust Forms App for their data collection needs
+              Join thousands of users who trust FORMCRAFT AI for their data collection needs
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
@@ -237,7 +237,7 @@ function DashboardContent() {
     const button = event?.target as HTMLButtonElement
     if (button) {
       const originalText = button.innerHTML
-      button.innerHTML = '✓ Copied!'
+      button.innerHTML = 'Copied!'
       setTimeout(() => {
         button.innerHTML = originalText
       }, 2000)
@@ -290,9 +290,6 @@ function DashboardContent() {
         <h1 className="text-4xl font-bold text-white">
           My Forms
         </h1>
-        <a href="/create" className="btn btn-primary glow-blue">
-          Create New Form
-        </a>
       </div>
 
       {forms.length === 0 ? (

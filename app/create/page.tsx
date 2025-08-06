@@ -191,13 +191,13 @@ function CreateFormContent() {
                         })}
                         className="form-input"
                       >
-                        <option value="text">📝 Text</option>
-                        <option value="email">📧 Email</option>
-                        <option value="number">🔢 Number</option>
-                        <option value="textarea">📄 Textarea</option>
-                        <option value="select">📋 Select</option>
-                        <option value="radio">🔘 Radio</option>
-                        <option value="checkbox">☑️ Checkbox</option>
+                        <option value="text">Text</option>
+                        <option value="email">Email</option>
+                        <option value="number">Number</option>
+                        <option value="textarea">Textarea</option>
+                        <option value="select">Select</option>
+                        <option value="radio">Radio</option>
+                        <option value="checkbox">Checkbox</option>
                       </select>
                     </div>
 

@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/lib/auth-context'
 import { useAuthModal } from '@/lib/auth-modal-context'
-import { Sparkles } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import UserDropdown from './user-dropdown'
 
 export default function Navigation() {
@@ -16,9 +16,9 @@ export default function Navigation() {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <div className="flex items-center space-x-2">
-                <Sparkles className="h-8 w-8 text-emerald-400" />
-                <h1 className="text-xl font-bold solid-text-emerald">
-                  Forms App
+                <FileText className="h-8 w-8 text-emerald-400" />
+                <h1 className="text-xl font-bold text-white/90">
+                  FormCraft AI
                 </h1>
               </div>
             </div>
@@ -37,9 +37,9 @@ export default function Navigation() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <a href="/" className="flex items-center space-x-2 hover:scale-105 transition-transform">
-              <Sparkles className="h-8 w-8 text-emerald-400" />
-              <h1 className="text-xl font-bold solid-text-emerald">
-                Forms App
+              <FileText className="h-8 w-8 text-emerald-400" />
+              <h1 className="text-xl font-bold text-white/90">
+                FormCraft AI
               </h1>
             </a>
           </div>
@@ -52,12 +52,6 @@ export default function Navigation() {
                   className="text-white/80 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/10"
                 >
                   Dashboard
-                </a>
-                <a
-                  href="/create"
-                  className="btn btn-primary"
-                >
-                  Create Form
                 </a>
                 <UserDropdown />
               </>

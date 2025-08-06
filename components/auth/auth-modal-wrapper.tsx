@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 export default function AuthModalWrapper() {
   const [mounted, setMounted] = useState(false)
   const { user } = useAuth()
+  const { isOpen, view, closeModal } = useAuthModal()
 
   useEffect(() => {
     setMounted(true)
@@ -18,8 +19,6 @@ export default function AuthModalWrapper() {
   }
 
   try {
-    const { isOpen, view, closeModal } = useAuthModal()
-
     // Auto-close modal when user signs in - moved outside try-catch
     return <AuthModalContent isOpen={isOpen} view={view} closeModal={closeModal} user={user} />
   } catch (error) {
