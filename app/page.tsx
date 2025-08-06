@@ -290,6 +290,9 @@ function DashboardContent() {
         <h1 className="text-4xl font-bold text-white">
           My Forms
         </h1>
+        <a href="/create" className="btn btn-primary glow-emerald">
+          Create Form
+        </a>
       </div>
 
       {forms.length === 0 ? (

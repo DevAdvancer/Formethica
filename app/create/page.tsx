@@ -232,7 +232,7 @@ function CreateFormContent() {
                         onChange={(e) => updateField(field.id, { required: e.target.checked })}
                         className="mr-2"
                       />
-                      <label htmlFor={`required-${field.id}`} className="text-sm text-gray-700">
+                      <label htmlFor={`required-${field.id}`} className="text-sm text-gray-100">
                         Required field
                       </label>
                     </div>
