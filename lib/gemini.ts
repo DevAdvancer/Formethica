@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
-const genAI = new GoogleGenerativeAI('AIzaSyCOp3kYMdCunbC8FnHtkpsfCaBIK7mg9cg')
+const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY as string)
 
 export async function suggestFormFields(formTitle: string, formDescription?: string): Promise<any[]> {
   try {
