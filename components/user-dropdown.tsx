@@ -2,12 +2,14 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '@/lib/auth-context'
+import { useConfirmation } from '@/lib/confirmation-context'
 import { PersonIcon, ExitIcon, GearIcon, LockClosedIcon } from '@radix-ui/react-icons'
 import { getStoredUsername } from '@/lib/user-utils'
 import ProfileModal from './profile-modal'
 
 export default function UserDropdown() {
   const { user, signOut } = useAuth()
+  const { showInfo } = useConfirmation()
   const [isOpen, setIsOpen] = useState(false)
   const [username, setUsername] = useState('')
   const [showProfileModal, setShowProfileModal] = useState(false)
@@ -51,7 +53,7 @@ export default function UserDropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 glass-dark rounded-xl shadow-2xl border border-white/10 z-50 animate-in slide-in-from-top-2 duration-200">
+        <div className="absolute right-0 mt-2 w-64 glass-dropdown rounded-xl shadow-2xl z-50 animate-in slide-in-from-top-2 duration-200">
           <div className="p-4 border-b border-white/10">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center">
@@ -79,8 +81,7 @@ export default function UserDropdown() {
             <button
               onClick={() => {
                 setIsOpen(false)
-                // TODO: Implement change password
-                alert('Change password coming soon!')
+                showInfo('Coming Soon', 'Password change functionality will be available in a future update.')
               }}
               className="w-full flex items-center space-x-3 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
             >

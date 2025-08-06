@@ -7,6 +7,7 @@ import { formatDate } from '@/lib/utils'
 import { Pencil1Icon, TrashIcon, Share2Icon, BarChartIcon, CalendarIcon } from '@radix-ui/react-icons'
 import { useAuth } from '@/lib/auth-context'
 import { useAuthModal } from '@/lib/auth-modal-context'
+import { useConfirmation } from '@/lib/confirmation-context'
 import ProtectedRoute from '@/components/protected-route'
 
 function WelcomePage() {
@@ -192,6 +193,7 @@ interface FormWithSubmissions extends Form {
 
 function DashboardContent() {
   const { user } = useAuth()
+  const { confirm, showSuccess, showError } = useConfirmation()
   const [forms, setForms] = useState<FormWithSubmissions[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -247,19 +249,28 @@ function DashboardContent() {
   }
 
   const deleteForm = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this form?')) return
+    confirm(
+      'Delete Form',
+      'Are you sure you want to delete this form? This action cannot be undone and will also delete all associated submissions.',
+      async () => {
+        try {
+          const { error } = await supabase
+            .from('forms')
+            .delete()
+            .eq('id', id)
 
-    try {
-      const { error } = await supabase
-        .from('forms')
-        .delete()
-        .eq('id', id)
+          if (error) {
+            showError('Delete Failed', `Failed to delete the form: ${error.message}`)
+            throw error
+          }
 
-      if (error) throw error
-      setForms(forms.filter(form => form.id !== id))
-    } catch (error) {
-      console.error('Error deleting form:', error)
-    }
+          setForms(forms.filter(form => form.id !== id))
+          showSuccess('Form Deleted', 'The form has been successfully deleted.')
+        } catch (error) {
+          console.error('Error deleting form:', error)
+        }
+      }
+    )
   }
 
   if (loading) {

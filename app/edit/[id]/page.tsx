@@ -6,10 +6,12 @@ import { supabase } from '@/lib/supabase'
 import { Form, FormField } from '@/lib/types'
 import { Plus, Trash2, GripVertical } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
+import { useConfirmation } from '@/lib/confirmation-context'
 import ProtectedRoute from '@/components/protected-route'
 
 function EditFormContent() {
   const { user, loading: authLoading } = useAuth()
+  const { showSuccess, showError } = useConfirmation()
   const params = useParams()
   const router = useRouter()
   const [form, setForm] = useState<Form | null>(null)
@@ -34,7 +36,14 @@ function EditFormContent() {
           .eq('user_id', user?.id || '')
           .single()
 
-        if (error) throw error
+        if (error) {
+          if (error.code === 'PGRST116') {
+            showError('Form Not Found', 'The form you are trying to edit does not exist or you do not have permission to edit it.')
+          } else {
+            showError('Error Loading Form', `Failed to load the form: ${error.message}`)
+          }
+          throw error
+        }
 
         setForm(data as unknown as Form)
         setTitle(data.title)
@@ -91,8 +100,13 @@ function EditFormContent() {
         .eq('id', form.id)
         .eq('user_id', user?.id || '')
 
-      if (error) throw error
-      router.push('/')
+      if (error) {
+        showError('Update Failed', `Failed to update the form: ${error.message}`)
+        throw error
+      }
+
+      showSuccess('Form Updated', 'Your form has been successfully updated!')
+      setTimeout(() => router.push('/'), 1500)
     } catch (error) {
       console.error('Error updating form:', error)
     } finally {
