@@ -235,7 +235,7 @@ export default function UserDropdown() {
                     setIsOpen(false)
                     signOut()
                   }}
-                  className="w-full flex items-center space-x-3 px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
+                  className="w-full flex items-center space-x-3 px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
                 >
                   <ExitIcon className="w-4 h-4" />
                   <span>Sign Out</span>
