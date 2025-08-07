@@ -79,7 +79,14 @@ npm install
 2. Create an API key for Gemini
 3. Add the API key to your environment variables
 
-### 4. Environment Variables
+### 4. Set up Web3Forms (for contact form)
+
+1. Go to [Web3Forms](https://web3forms.com/)
+2. Sign up for a free account
+3. Get your access key from the dashboard
+4. Add the access key to your environment variables
+
+### 5. Environment Variables
 
 Create a `.env.local` file in the root directory:
 
@@ -91,6 +98,9 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
 # Google Gemini AI
 GEMINI_API_KEY=your_gemini_api_key
+
+# Web3Forms (for contact form)
+NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY=your_web3forms_access_key
 
 # App Configuration
 NEXT_PUBLIC_APP_URL=http://localhost:3000

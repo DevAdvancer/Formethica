@@ -1,10 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import { Form } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
 import { Pencil1Icon, TrashIcon, Share2Icon, BarChartIcon, CalendarIcon } from '@radix-ui/react-icons'
+import { Check, Sparkles, Star } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import { useAuthModal } from '@/lib/auth-modal-context'
 import { useConfirmation } from '@/lib/confirmation-context'
@@ -12,8 +14,15 @@ import ProtectedRoute from '@/components/protected-route'
 
 function WelcomePage() {
   const { openModal } = useAuthModal()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
     // Check URL parameters to auto-open auth modal
     const urlParams = new URLSearchParams(window.location.search)
     const authParam = urlParams.get('auth')
@@ -27,7 +36,7 @@ function WelcomePage() {
       // Clean up URL
       window.history.replaceState({}, '', '/')
     }
-  }, [openModal])
+  }, [openModal, mounted])
 
   return (
     <div className="min-h-screen">
@@ -78,7 +87,7 @@ function WelcomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold text-white mb-6">Why Choose FORMETHICA?</h2>
@@ -94,8 +103,8 @@ function WelcomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-semibold text-white mb-4">AI-Powered</h3>
-              <p className="text-white/70 text-lg">Get intelligent field suggestions and chat with our AI assistant to create better forms faster.</p>
+              <h3 className="text-2xl font-semibold text-white mb-4">AI-Powered Form Builder</h3>
+              <p className="text-white/70 text-lg">Get intelligent field suggestions based on your form title. Our AI chatbot helps you create better forms faster with smart recommendations.</p>
             </div>
 
             <div className="card glow-orange text-center">
@@ -105,54 +114,186 @@ function WelcomePage() {
                 </svg>
               </div>
               <h3 className="text-2xl font-semibold text-white mb-4">Real-time Analytics</h3>
-              <p className="text-white/70 text-lg">Track responses in real-time with beautiful charts and export data to Excel or CSV instantly.</p>
+              <p className="text-white/70 text-lg">Track form submissions in real-time with beautiful analytics dashboard. Export responses to Excel or CSV with one click.</p>
             </div>
 
             <div className="card glow-amber text-center">
               <div className="text-amber-400 mb-6">
                 <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-semibold text-white mb-4">Secure & Private</h3>
-              <p className="text-white/70 text-lg">Your data is encrypted and secure. GDPR compliant with advanced privacy controls.</p>
+              <h3 className="text-2xl font-semibold text-white mb-4">Easy Sharing</h3>
+              <p className="text-white/70 text-lg">Share your forms instantly with automatically generated short URLs. Copy links with one click and start collecting responses immediately.</p>
             </div>
           </div>
 
           {/* Additional Features */}
           <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
             <div>
-              <h3 className="text-4xl font-bold text-white mb-6">Smart Form Builder</h3>
+              <h3 className="text-4xl font-bold text-white mb-6">Complete Form Solution</h3>
               <ul className="space-y-4 text-lg text-white/80">
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-emerald-400 rounded-full mr-4"></span>
-                  AI suggests relevant fields based on your form title
+                  Multiple field types: text, email, number, select, radio, checkbox, textarea
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-orange-400 rounded-full mr-4"></span>
-                  Drag and drop interface for easy customization
+                  Drag and drop interface for easy form customization
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-amber-400 rounded-full mr-4"></span>
-                  Multiple field types: text, email, select, radio, checkbox
+                  Real-time form validation and required field controls
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-cyan-400 rounded-full mr-4"></span>
-                  Real-time preview and validation
+                  Secure data collection with user authentication
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-purple-400 rounded-full mr-4"></span>
+                  Form activation/deactivation controls
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-pink-400 rounded-full mr-4"></span>
+                  Detailed submission tracking and management
                 </li>
               </ul>
             </div>
             <div className="card glow-orange">
-              <div className="aspect-square bg-gradient-to-br from-orange-900/20 to-amber-900/20 rounded-xl flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a1 1 0 01-1-1V9a1 1 0 011-1h1a2 2 0 100-4H4a1 1 0 01-1-1V4a1 1 0 011-1h3a1 1 0 001-1v-1a2 2 0 012-2z" />
-                    </svg>
-                  </div>
-                  <p className="text-white/70">Form Builder Preview</p>
-                </div>
+              <div className="aspect-square rounded-xl overflow-hidden">
+                <Image
+                  src="/sampleForm.png"
+                  alt="Form Builder Interface - FORMETHICA"
+                  width={600}
+                  height={600}
+                  className="w-full h-full object-cover rounded-xl"
+                  priority
+                />
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-bold text-white mb-6">
+              <span className="solid-text-emerald">Simple</span> Pricing Plans
+            </h2>
+            <p className="text-xl text-white/70 max-w-3xl mx-auto">
+              Currently in public preview. All pricing plans coming soon!
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {/* Free Plan */}
+            <div className="card glow-emerald">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold mb-2 text-white">Free</h3>
+                <div className="mb-4">
+                  <span className="text-4xl font-bold text-white">Coming Soon</span>
+                </div>
+                <p className="text-white/70">Perfect for getting started</p>
+              </div>
+
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-3">
+                  <span className="text-white">Up to 3 form creations</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-white">Unlimited submissions</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-white">AI-powered suggestions</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-white">Export to Excel/CSV</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-white">Basic analytics</span>
+                </li>
+              </ul>
+
+              <button
+                className="w-full bg-gray-700 text-white/60 py-3 px-6 rounded-lg cursor-not-allowed"
+                disabled
+              >
+                Coming Soon
+              </button>
+            </div>
+
+            {/* Pro Plan */}
+            <div className="card glow-orange">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold mb-2 text-white">Pro</h3>
+                <div className="mb-4">
+                  <span className="text-4xl font-bold text-white">Coming Soon</span>
+                </div>
+                <p className="text-white/70">For power users</p>
+              </div>
+
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-3">
+                  <span className="text-white">Up to 30 form creations</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-white">Email notifications</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-white">Advanced analytics</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-white">Priority support</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-white">Custom branding removal</span>
+                </li>
+              </ul>
+
+              <button
+                className="w-full bg-gray-700 text-white/60 py-3 px-6 rounded-lg cursor-not-allowed"
+                disabled
+              >
+                Coming Soon
+              </button>
+            </div>
+
+            {/* Max Plan */}
+            <div className="card glow-amber">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold mb-2 text-white">Max</h3>
+                <div className="mb-4">
+                  <span className="text-4xl font-bold text-white">Coming Soon</span>
+                </div>
+                <p className="text-white/70">For teams & unlimited creativity</p>
+              </div>
+
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-3">
+                  <span className="text-white">Up to 50 form creations</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-white">Deletions don't affect limit</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-white">Team collaboration</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-white">API access</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-white">Dedicated support</span>
+                </li>
+              </ul>
+
+              <button
+                className="w-full bg-gray-700 text-white/60 py-3 px-6 rounded-lg cursor-not-allowed"
+                disabled
+              >
+                Coming Soon
+              </button>
             </div>
           </div>
         </div>
@@ -196,6 +337,11 @@ function DashboardContent() {
   const { confirm, showSuccess, showError } = useConfirmation()
   const [forms, setForms] = useState<FormWithSubmissions[]>([])
   const [loading, setLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     if (user) {
@@ -232,6 +378,10 @@ function DashboardContent() {
   }
 
   const copyToClipboard = (text: string) => {
+    if (typeof window === 'undefined' || !navigator.clipboard) {
+      return
+    }
+
     navigator.clipboard.writeText(text)
     // Show a temporary success message
     const button = event?.target as HTMLButtonElement
@@ -245,6 +395,9 @@ function DashboardContent() {
   }
 
   const getShortUrl = (shortCode: string) => {
+    if (typeof window === 'undefined') {
+      return `/s/${shortCode}` // Fallback for SSR
+    }
     return `${window.location.origin}/s/${shortCode}`
   }
 
@@ -351,16 +504,18 @@ function DashboardContent() {
               <div className="mb-6">
                 <div className="flex items-center justify-between text-sm mb-2">
                   <span className="text-white/60">Share Form:</span>
-                  <button
-                    onClick={() => copyToClipboard(getShortUrl(form.short_url))}
-                    className="flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer"
-                  >
-                    <Share2Icon className="w-4 h-4" />
-                    <span>Copy Link</span>
-                  </button>
+                  {mounted && (
+                    <button
+                      onClick={() => copyToClipboard(getShortUrl(form.short_url))}
+                      className="flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer"
+                    >
+                      <Share2Icon className="w-4 h-4" />
+                      <span>Copy Link</span>
+                    </button>
+                  )}
                 </div>
                 <code className="glass px-3 py-2 rounded-lg text-xs block truncate text-white/80">
-                  {getShortUrl(form.short_url)}
+                  {mounted ? getShortUrl(form.short_url) : `/s/${form.short_url}`}
                 </code>
               </div>
 

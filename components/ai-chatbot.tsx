@@ -90,7 +90,7 @@ export default function AIChatbot() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[500px] glass-dark rounded-2xl shadow-2xl border border-white/10 z-50 flex flex-col">
+        <div className="fixed bottom-24 right-6 w-96 h-[500px] glass-dark-ai rounded-2xl shadow-2xl border border-white/10 z-50 flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-white/10">
             <div className="flex items-center space-x-3">

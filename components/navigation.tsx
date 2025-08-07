@@ -9,28 +9,6 @@ export default function Navigation() {
   const { user, loading } = useAuth()
   const { openModal } = useAuthModal()
 
-  if (loading) {
-    return (
-      <nav className="nav-glass">
-        <div className="px-6">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <div className="flex items-center space-x-2">
-                <FileText className="h-8 w-8 text-emerald-400" />
-                <h1 className="text-xl font-bold text-white/90">
-                  Formethica
-                </h1>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="spinner h-6 w-6"></div>
-            </div>
-          </div>
-        </div>
-      </nav>
-    )
-  }
-
   return (
     <nav className="nav-glass">
       <div className="px-6">
@@ -45,7 +23,9 @@ export default function Navigation() {
           </div>
 
           <div className="flex items-center space-x-4">
-            {user ? (
+            {loading ? (
+              <div className="spinner h-6 w-6"></div>
+            ) : user ? (
               <>
                 <a
                   href="/"
