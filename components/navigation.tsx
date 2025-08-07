@@ -18,7 +18,7 @@ export default function Navigation() {
               <div className="flex items-center space-x-2">
                 <FileText className="h-8 w-8 text-emerald-400" />
                 <h1 className="text-xl font-bold text-white/90">
-                  FormCraft AI
+                  Formethica
                 </h1>
               </div>
             </div>
@@ -36,10 +36,10 @@ export default function Navigation() {
       <div className="px-6">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <a href="/" className="flex items-center space-x-2 hover:scale-105 transition-transform">
+            <a href="/" className="flex items-center space-x-2 hover:scale-105 transition-transform cursor-pointer">
               <FileText className="h-8 w-8 text-emerald-400" />
               <h1 className="text-xl font-bold text-white/90">
-                FormCraft AI
+                Formethica
               </h1>
             </a>
           </div>
@@ -49,7 +49,7 @@ export default function Navigation() {
               <>
                 <a
                   href="/"
-                  className="text-white/80 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/10"
+                  className="text-white/80 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
                 >
                   Dashboard
                 </a>
@@ -59,7 +59,7 @@ export default function Navigation() {
               <>
                 <button
                   onClick={() => openModal('sign_in')}
-                  className="text-white/80 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/10"
+                  className="text-white/80 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
                 >
                   Sign In
                 </button>

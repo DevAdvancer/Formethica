@@ -59,7 +59,7 @@ export default function ConfirmationModal({
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-md"
+        className="absolute inset-0 bg-black/70 backdrop-blur-md cursor-default"
         onClick={onClose}
       />
 
@@ -74,7 +74,7 @@ export default function ConfirmationModal({
             </div>
             <button
               onClick={onClose}
-              className="text-white/60 hover:text-white transition-colors"
+              className="text-white/60 hover:text-white transition-colors cursor-pointer"
             >
               <X size={20} />
             </button>

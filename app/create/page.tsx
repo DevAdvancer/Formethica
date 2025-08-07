@@ -108,7 +108,7 @@ function CreateFormContent() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="form-input"
+                className="form-input cursor-text"
                 placeholder="Enter form title"
                 required
               />
@@ -119,7 +119,7 @@ function CreateFormContent() {
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="form-input"
+                className="form-input cursor-text"
                 rows={3}
                 placeholder="Optional form description"
               />
@@ -136,7 +136,7 @@ function CreateFormContent() {
             <button
               type="button"
               onClick={addField}
-              className="btn btn-primary glow-emerald"
+              className="btn btn-primary glow-emerald cursor-pointer"
             >
               <PlusIcon className="w-4 h-4 mr-1" />
               Add Field
@@ -175,7 +175,7 @@ function CreateFormContent() {
                     <button
                       type="button"
                       onClick={() => removeField(field.id)}
-                      className="text-red-400 hover:text-red-300 transition-colors p-2 hover:bg-red-500/10 rounded-lg"
+                      className="text-red-400 hover:text-red-300 transition-colors p-2 hover:bg-red-500/10 rounded-lg cursor-pointer"
                     >
                       <TrashIcon className="w-4 h-4" />
                     </button>
@@ -189,7 +189,7 @@ function CreateFormContent() {
                         onChange={(e) => updateField(field.id, {
                           type: e.target.value as FormField['type']
                         })}
-                        className="form-input"
+                        className="form-input cursor-pointer"
                       >
                         <option value="text">Text</option>
                         <option value="email">Email</option>
@@ -207,7 +207,7 @@ function CreateFormContent() {
                         type="text"
                         value={field.label}
                         onChange={(e) => updateField(field.id, { label: e.target.value })}
-                        className="form-input"
+                        className="form-input cursor-text"
                         placeholder="Field label"
                         required
                       />
@@ -219,7 +219,7 @@ function CreateFormContent() {
                         type="text"
                         value={field.placeholder || ''}
                         onChange={(e) => updateField(field.id, { placeholder: e.target.value })}
-                        className="form-input"
+                        className="form-input cursor-text"
                         placeholder="Placeholder text"
                       />
                     </div>
@@ -230,7 +230,7 @@ function CreateFormContent() {
                         id={`required-${field.id}`}
                         checked={field.required}
                         onChange={(e) => updateField(field.id, { required: e.target.checked })}
-                        className="mr-2"
+                        className="mr-2 cursor-pointer"
                       />
                       <label htmlFor={`required-${field.id}`} className="text-sm text-gray-100">
                         Required field
@@ -246,7 +246,7 @@ function CreateFormContent() {
                         onChange={(e) => updateField(field.id, {
                           options: e.target.value.split('\n').filter(opt => opt.trim())
                         })}
-                        className="form-input"
+                        className="form-input cursor-text"
                         rows={3}
                         placeholder="Option 1&#10;Option 2&#10;Option 3"
                       />
@@ -262,14 +262,14 @@ function CreateFormContent() {
           <button
             type="button"
             onClick={() => router.push('/')}
-            className="btn btn-secondary"
+            className="btn btn-secondary cursor-pointer"
           >
             ← Back to Dashboard
           </button>
           <button
             type="submit"
             disabled={loading || !title.trim() || fields.length === 0}
-            className="btn btn-primary glow-emerald disabled:opacity-50 disabled:hover:scale-100"
+            className="btn btn-primary glow-emerald disabled:opacity-50 disabled:hover:scale-100 cursor-pointer disabled:cursor-not-allowed"
           >
             {loading ? (
               <>

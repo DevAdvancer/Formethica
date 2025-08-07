@@ -154,7 +154,7 @@ function EditFormContent() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="form-input"
+                className="form-input cursor-text"
                 placeholder="Enter form title"
                 required
               />
@@ -165,7 +165,7 @@ function EditFormContent() {
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="form-input"
+                className="form-input cursor-text"
                 rows={3}
                 placeholder="Optional form description"
               />
@@ -179,7 +179,7 @@ function EditFormContent() {
             <button
               type="button"
               onClick={addField}
-              className="btn btn-primary glow-emerald"
+              className="btn btn-primary glow-emerald cursor-pointer"
             >
               <Plus size={16} className="mr-1" />
               Add Field
@@ -204,7 +204,7 @@ function EditFormContent() {
                     <button
                       type="button"
                       onClick={() => removeField(field.id)}
-                      className="text-red-400 hover:text-red-300 transition-colors"
+                      className="text-red-400 hover:text-red-300 transition-colors cursor-pointer"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -218,7 +218,7 @@ function EditFormContent() {
                         onChange={(e) => updateField(field.id, {
                           type: e.target.value as FormField['type']
                         })}
-                        className="form-input"
+                        className="form-input cursor-pointer"
                       >
                         <option value="text">Text</option>
                         <option value="email">Email</option>
@@ -236,7 +236,7 @@ function EditFormContent() {
                         type="text"
                         value={field.label}
                         onChange={(e) => updateField(field.id, { label: e.target.value })}
-                        className="form-input"
+                        className="form-input cursor-text"
                         placeholder="Field label"
                         required
                       />
@@ -248,7 +248,7 @@ function EditFormContent() {
                         type="text"
                         value={field.placeholder || ''}
                         onChange={(e) => updateField(field.id, { placeholder: e.target.value })}
-                        className="form-input"
+                        className="form-input cursor-text"
                         placeholder="Placeholder text"
                       />
                     </div>
@@ -259,7 +259,7 @@ function EditFormContent() {
                         id={`required-${field.id}`}
                         checked={field.required}
                         onChange={(e) => updateField(field.id, { required: e.target.checked })}
-                        className="mr-2 accent-emerald-400"
+                        className="mr-2 accent-emerald-400 cursor-pointer"
                       />
                       <label htmlFor={`required-${field.id}`} className="text-sm text-white/80">
                         Required field
@@ -275,7 +275,7 @@ function EditFormContent() {
                         onChange={(e) => updateField(field.id, {
                           options: e.target.value.split('\n').filter(opt => opt.trim())
                         })}
-                        className="form-input"
+                        className="form-input cursor-text"
                         rows={3}
                         placeholder="Option 1&#10;Option 2&#10;Option 3"
                       />
@@ -299,14 +299,14 @@ function EditFormContent() {
             <button
               type="button"
               onClick={() => router.push('/')}
-              className="btn btn-secondary"
+              className="btn btn-secondary cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving || !title.trim() || fields.length === 0}
-              className="btn btn-primary disabled:opacity-50"
+              className="btn btn-primary disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
             >
               {saving ? 'Saving...' : 'Save Changes'}
             </button>

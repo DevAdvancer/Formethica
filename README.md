@@ -1,4 +1,4 @@
-# FormCraft AI - Intelligent Form Builder
+# Formethica - Intelligent Form Builder
 
 A modern, AI-powered forms application built with Next.js 15, Supabase, and Google Gemini AI. Create beautiful forms with intelligent field suggestions, manage submissions with advanced analytics, and share with automatic link shortening.
 
@@ -61,7 +61,7 @@ A modern, AI-powered forms application built with Next.js 15, Supabase, and Goog
 
 ```bash
 git clone <your-repo>
-cd forms-supabase
+cd formethica
 npm install
 ```
 
@@ -385,8 +385,8 @@ We welcome contributions! Here's how to get started:
 
 1. **Fork & Clone**:
    ```bash
-   git clone https://github.com/yourusername/formcraft-ai.git
-   cd formcraft-ai
+   git clone https://github.com/yourusername/formethica.git
+   cd formethica
    npm install
    ```
 
@@ -541,4 +541,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 **Built with ❤️ by developers, for developers**
 
-*FormCraft AI - Where intelligent form building meets beautiful design*
+*Formethica - Where intelligent form building meets beautiful design*

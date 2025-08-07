@@ -162,14 +162,14 @@ export default function FormPage() {
         return (
           <div className="space-y-2">
             {field.options?.map((option, index) => (
-              <label key={index} className="flex items-center">
+              <label key={index} className="flex items-center cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors">
                 <input
                   type="radio"
                   name={field.id}
                   value={option}
                   checked={formData[field.id] === option}
                   onChange={(e) => handleFieldChange(field.id, e.target.value)}
-                  className="mr-3 w-4 h-4 text-blue-400 bg-transparent border-2 border-white/30 rounded-full focus:ring-blue-400 focus:ring-2"
+                  className="mr-3 w-4 h-4 text-blue-400 bg-transparent border-2 border-white/30 rounded-full focus:ring-blue-400 focus:ring-2 cursor-pointer"
                 />
                 <span className="text-white/90">{option}</span>
               </label>
@@ -193,7 +193,7 @@ export default function FormPage() {
                       : currentValues.filter((v: string) => v !== option)
                     handleFieldChange(field.id, newValues)
                   }}
-                  className="mr-3 w-4 h-4 text-blue-400 bg-transparent border-2 border-white/30 rounded focus:ring-blue-400 focus:ring-2"
+                  className="mr-3 w-4 h-4 text-blue-400 bg-transparent border-2 border-white/30 rounded focus:ring-blue-400 focus:ring-2 cursor-pointer"
                 />
                 <span className="text-white/90">{option}</span>
               </label>
@@ -281,7 +281,7 @@ export default function FormPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full btn btn-primary glow-emerald disabled:opacity-50 disabled:hover:scale-100"
+              className="w-full btn btn-primary glow-emerald disabled:opacity-50 disabled:hover:scale-100 cursor-pointer disabled:cursor-not-allowed"
             >
               {submitting ? (
                 <>

@@ -103,7 +103,7 @@ export function ConfirmationProvider({ children }: { children: ReactNode }) {
                 </div>
                 <button
                   onClick={handleClose}
-                  className="text-white/60 hover:text-white transition-colors"
+                  className="text-white/60 hover:text-white transition-colors cursor-pointer"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -120,14 +120,14 @@ export function ConfirmationProvider({ children }: { children: ReactNode }) {
                   {options.type === 'confirm' && (
                     <button
                       onClick={handleClose}
-                      className="btn btn-secondary"
+                      className="btn btn-secondary cursor-pointer"
                     >
                       {options.cancelText || 'Cancel'}
                     </button>
                   )}
                   <button
                     onClick={handleConfirm}
-                    className={`btn ${options.type === 'error' ? 'btn-danger' : 'btn-primary'}`}
+                    className={`btn ${options.type === 'error' ? 'btn-danger' : 'btn-primary'} cursor-pointer`}
                   >
                     {options.confirmText || 'OK'}
                   </button>

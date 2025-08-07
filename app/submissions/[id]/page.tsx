@@ -142,7 +142,7 @@ function SubmissionsContent() {
           <button
             onClick={exportToExcel}
             disabled={submissions.length === 0}
-            className="btn btn-primary glow-emerald disabled:opacity-50"
+            className="btn btn-primary glow-emerald disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
           >
             <Download size={16} className="mr-1" />
             Export Excel
@@ -150,7 +150,7 @@ function SubmissionsContent() {
           <button
             onClick={exportToCSV}
             disabled={submissions.length === 0}
-            className="btn btn-secondary disabled:opacity-50"
+            className="btn btn-secondary disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
           >
             <Download size={16} className="mr-1" />
             Export CSV
@@ -212,7 +212,7 @@ function SubmissionsContent() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">
                       <button
                         onClick={() => setSelectedSubmission(submission)}
-                        className="text-emerald-400 hover:text-emerald-300 transition-colors"
+                        className="text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer"
                       >
                         <Eye size={16} />
                       </button>
@@ -234,7 +234,7 @@ function SubmissionsContent() {
                 <h3 className="text-lg font-semibold text-white">Submission Details</h3>
                 <button
                   onClick={() => setSelectedSubmission(null)}
-                  className="text-white/60 hover:text-white text-2xl leading-none"
+                  className="text-white/60 hover:text-white text-2xl leading-none cursor-pointer"
                 >
                   ×
                 </button>

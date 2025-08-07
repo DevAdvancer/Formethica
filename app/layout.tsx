@@ -3,7 +3,7 @@ import "./globals.css";
 import ClientLayout from "@/components/client-layout";
 
 export const metadata: Metadata = {
-  title: "FormCraft AI - Intelligent Form Builder",
+  title: "Formethica - Intelligent Form Builder",
   description: "Create beautiful forms with AI-powered suggestions and advanced analytics",
   authors: [{ name: "Abhirup Kumar" }],
   keywords: [

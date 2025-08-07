@@ -81,7 +81,7 @@ export default function AiFieldSuggestions({
           <button
             onClick={generateSuggestions}
             disabled={isLoading}
-            className="btn btn-primary text-sm px-4 py-2 disabled:opacity-50"
+            className="btn btn-primary text-sm px-4 py-2 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>
@@ -106,7 +106,7 @@ export default function AiFieldSuggestions({
             </p>
             <button
               onClick={addAllFields}
-              className="btn btn-secondary text-xs px-3 py-1"
+              className="btn btn-secondary text-xs px-3 py-1 cursor-pointer"
             >
               Add All
             </button>
@@ -142,7 +142,7 @@ export default function AiFieldSuggestions({
 
                 <button
                   onClick={() => addField(field)}
-                  className="btn btn-primary text-xs px-2 py-1 ml-3"
+                  className="btn btn-primary text-xs px-2 py-1 ml-3 cursor-pointer"
                 >
                   <PlusIcon className="w-3 h-3" />
                 </button>
@@ -162,7 +162,7 @@ export default function AiFieldSuggestions({
               setShowSuggestions(false)
               generateSuggestions()
             }}
-            className="btn btn-secondary text-sm"
+            className="btn btn-secondary text-sm cursor-pointer"
           >
             Generate More
           </button>

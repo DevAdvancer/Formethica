@@ -83,7 +83,7 @@ export default function AIChatbot() {
       {/* Chat Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 z-50 glow-emerald"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 z-50 glow-emerald cursor-pointer"
       >
         <ChatBubbleIcon className="w-6 h-6 text-white" />
       </button>
@@ -104,7 +104,7 @@ export default function AIChatbot() {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-white/60 hover:text-white transition-colors p-1"
+              className="text-white/60 hover:text-white transition-colors p-1 cursor-pointer"
             >
               <Cross2Icon className="w-5 h-5" />
             </button>
@@ -161,13 +161,13 @@ export default function AIChatbot() {
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me anything about forms..."
-                className="flex-1 form-input text-sm"
+                className="flex-1 form-input text-sm cursor-text disabled:cursor-not-allowed"
                 disabled={isLoading}
               />
               <button
                 onClick={handleSendMessage}
                 disabled={!inputText.trim() || isLoading}
-                className="btn btn-primary px-3 py-2 disabled:opacity-50"
+                className="btn btn-primary px-3 py-2 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
               >
                 <PaperPlaneIcon className="w-4 h-4" />
               </button>

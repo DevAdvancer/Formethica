@@ -19,7 +19,7 @@ export default function AuthModal({ isOpen, onClose, initialView = 'sign_in' }: 
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop with blur */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-md"
+        className="absolute inset-0 bg-black/70 backdrop-blur-md cursor-default"
         onClick={onClose}
       />
 
@@ -29,11 +29,11 @@ export default function AuthModal({ isOpen, onClose, initialView = 'sign_in' }: 
           {/* Header */}
           <div className="flex justify-between items-center p-6 pb-4">
             <h2 className="text-2xl font-bold text-white">
-              {view === 'sign_in' ? 'Welcome Back' : 'Join FormCraft AI'}
+              {view === 'sign_in' ? 'Welcome Back' : 'Join Formethica'}
             </h2>
             <button
               onClick={onClose}
-              className="text-white/60 hover:text-white transition-colors"
+              className="text-white/60 hover:text-white transition-colors cursor-pointer"
             >
               <X size={24} />
             </button>
@@ -47,7 +47,7 @@ export default function AuthModal({ isOpen, onClose, initialView = 'sign_in' }: 
                   Sign in to your account or{' '}
                   <button
                     onClick={() => setView('sign_up')}
-                    className="font-medium text-emerald-400 hover:text-emerald-300 transition-colors underline"
+                    className="font-medium text-emerald-400 hover:text-emerald-300 transition-colors underline cursor-pointer"
                   >
                     create a new account
                   </button>
@@ -57,7 +57,7 @@ export default function AuthModal({ isOpen, onClose, initialView = 'sign_in' }: 
                   Create your account or{' '}
                   <button
                     onClick={() => setView('sign_in')}
-                    className="font-medium text-orange-400 hover:text-orange-300 transition-colors underline"
+                    className="font-medium text-orange-400 hover:text-orange-300 transition-colors underline cursor-pointer"
                   >
                     sign in to existing account
                   </button>

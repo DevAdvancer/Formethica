@@ -81,7 +81,7 @@ function WelcomePage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-white mb-6">Why Choose FORMCRAFT AI?</h2>
+            <h2 className="text-5xl font-bold text-white mb-6">Why Choose FORMETHICA?</h2>
             <p className="text-xl text-white/70 max-w-3xl mx-auto">
               Powered by AI and designed for modern workflows
             </p>
@@ -164,7 +164,7 @@ function WelcomePage() {
           <div className="card glow-emerald">
             <h2 className="text-4xl font-bold text-white mb-6">Ready to Get Started?</h2>
             <p className="text-xl text-white/80 mb-8">
-              Join thousands of users who trust FORMCRAFT AI for their data collection needs
+              Join thousands of users who trust FORMETHICA for their data collection needs
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
@@ -308,7 +308,7 @@ function DashboardContent() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {forms.map((form) => (
-            <div key={form.id} className="card group">
+            <div key={form.id} className="card group cursor-default">
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-lg font-semibold text-white truncate group-hover:text-emerald-300 transition-colors">
                   {form.title}
@@ -353,7 +353,7 @@ function DashboardContent() {
                   <span className="text-white/60">Share Form:</span>
                   <button
                     onClick={() => copyToClipboard(getShortUrl(form.short_url))}
-                    className="flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 transition-colors"
+                    className="flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer"
                   >
                     <Share2Icon className="w-4 h-4" />
                     <span>Copy Link</span>
@@ -380,7 +380,7 @@ function DashboardContent() {
                 </a>
                 <button
                   onClick={() => deleteForm(form.id)}
-                  className="btn btn-danger text-sm"
+                  className="btn btn-danger text-sm cursor-pointer"
                 >
                   <TrashIcon className="w-4 h-4" />
                 </button>

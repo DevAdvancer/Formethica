@@ -177,6 +177,12 @@ body {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  cursor: text;
+}
+
+.form-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .form-input::placeholder {
@@ -207,12 +213,22 @@ body {
   border-radius: 1rem;
   padding: 1.5rem;
   transition: all 0.3s ease;
+  cursor: default;
 }
 
 .card:hover {
   background: rgba(255, 255, 255, 0.15);
   transform: scale(1.02);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.card.interactive {
+  cursor: pointer;
+}
+
+.card.interactive:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
 }
 
 .card-dark {
@@ -224,12 +240,22 @@ body {
   border-radius: 1rem;
   padding: 1.5rem;
   transition: all 0.3s ease;
+  cursor: default;
 }
 
 .card-dark:hover {
   background: rgba(0, 0, 0, 0.3);
   transform: scale(1.02);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.card-dark.interactive {
+  cursor: pointer;
+}
+
+.card-dark.interactive:hover {
+  background: rgba(0, 0, 0, 0.4);
+  transform: scale(1.05);
 }
 
 /* Navigation */
@@ -384,6 +410,53 @@ body {
 
 .btn:disabled:hover {
   transform: none !important;
+}
+
+/* Loading state for buttons */
+.btn.loading {
+  cursor: wait;
+  pointer-events: none;
+}
+
+.btn.loading:hover {
+  transform: none !important;
+}
+
+/* Cursor utility classes */
+.cursor-interactive {
+  cursor: pointer;
+}
+
+.cursor-text-input {
+  cursor: text;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+.cursor-wait {
+  cursor: wait;
+}
+
+.cursor-move {
+  cursor: move;
+}
+
+.cursor-resize {
+  cursor: resize;
+}
+
+.cursor-close {
+  cursor: pointer;
+}
+
+.cursor-clickable {
+  cursor: pointer;
+}
+
+.cursor-default {
+  cursor: default;
 }
 
 /* Dropdown animations */

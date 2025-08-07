@@ -13,9 +13,9 @@ const nouns = [
 export function generateUsername(): string {
   const adjective = adjectives[Math.floor(Math.random() * adjectives.length)]
   const noun = nouns[Math.floor(Math.random() * nouns.length)]
-  const number = Math.floor(Math.random() * 100)
+  const number = Math.floor(Math.random() * 1000)
 
-  return `${adjective}${noun}${number}`.slice(0, 6)
+  return `${adjective}${noun}${number}`
 }
 
 export function getStoredUsername(email: string): string {
