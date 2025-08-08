@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from './supabase'
 import { UserService, UserProfile } from './user-service'
@@ -37,37 +37,68 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const refreshUserProfile = async () => {
-    if (user?.email) {
-      const profile = await UserService.getOrCreateUser(user.email)
+  // Memoize the user profile fetching function to prevent recreating it
+  const fetchUserProfile = useCallback(async (email: string) => {
+    try {
+      const profile = await UserService.getOrCreateUser(email)
       setUserProfile(profile)
+      return profile
+    } catch (error) {
+      console.error('Error fetching user profile:', error)
+      setUserProfile(null)
+      return null
     }
-  }
+  }, [])
+
+  const refreshUserProfile = useCallback(async () => {
+    if (user?.email) {
+      await fetchUserProfile(user.email)
+    }
+  }, [user?.email, fetchUserProfile])
 
   useEffect(() => {
+    let isMounted = true
+
     // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
 
-      if (session?.user?.email) {
-        const profile = await UserService.getOrCreateUser(session.user.email)
-        setUserProfile(profile)
+        if (!isMounted) return
+
+        setSession(session)
+        setUser(session?.user ?? null)
+
+        if (session?.user?.email) {
+          await fetchUserProfile(session.user.email)
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error)
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
       }
+    }
 
-      setLoading(false)
-    })
+    initializeAuth()
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!isMounted) return
+
+      console.log('Auth state change:', event, !!session?.user)
+
       setSession(session)
       setUser(session?.user ?? null)
 
       if (session?.user?.email) {
-        const profile = await UserService.getOrCreateUser(session.user.email)
-        setUserProfile(profile)
+        // Only fetch profile on sign_in or token_refreshed, not on every change
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          await fetchUserProfile(session.user.email)
+        }
       } else {
         setUserProfile(null)
       }
@@ -75,22 +106,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false)
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      isMounted = false
+      subscription.unsubscribe()
+    }
+  }, [fetchUserProfile])
+
+  const signOut = useCallback(async () => {
+    try {
+      await supabase.auth.signOut()
+      setUserProfile(null)
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
   }, [])
 
-  const signOut = async () => {
-    await supabase.auth.signOut()
-    setUserProfile(null)
-  }
-
-  const value = {
+  // Memoize the context value to prevent unnecessary re-renders
+  const value = useMemo(() => ({
     user,
     session,
     userProfile,
     loading,
     signOut,
     refreshUserProfile
-  }
+  }), [user, session, userProfile, loading, signOut, refreshUserProfile])
 
   return (
     <AuthContext.Provider value={value}>
