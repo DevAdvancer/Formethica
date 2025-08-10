@@ -5,7 +5,7 @@ import { AuthModalProvider } from "@/lib/auth-modal-context";
 import { ConfirmationProvider } from "@/lib/confirmation-context";
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
-import AIChatbot from "@/components/ai-chatbot";
+import AIChatbotLazy from "@/components/ai-chatbot-lazy";
 import AuthModalWrapper from "@/components/auth/auth-modal-wrapper";
 
 export default function ClientLayout({
@@ -21,7 +21,7 @@ export default function ClientLayout({
             <Navigation />
             <main className="relative z-10 flex-1">{children}</main>
             <Footer />
-            <AIChatbot />
+            <AIChatbotLazy />
             <AuthModalWrapper />
           </div>
         </ConfirmationProvider>

@@ -1,13 +1,22 @@
 'use client'
 
+import { memo, useCallback } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { useAuthModal } from '@/lib/auth-modal-context'
 import { FileText } from 'lucide-react'
 import UserDropdown from './user-dropdown'
 
-export default function Navigation() {
+const Navigation = memo(function Navigation() {
   const { user, loading } = useAuth()
   const { openModal } = useAuthModal()
+
+  const handleSignIn = useCallback(() => {
+    openModal('sign_in')
+  }, [openModal])
+
+  const handleSignUp = useCallback(() => {
+    openModal('sign_up')
+  }, [openModal])
 
   return (
     <nav className="nav-glass">
@@ -38,13 +47,13 @@ export default function Navigation() {
             ) : (
               <>
                 <button
-                  onClick={() => openModal('sign_in')}
+                  onClick={handleSignIn}
                   className="text-white/80 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
                 >
                   Sign In
                 </button>
                 <button
-                  onClick={() => openModal('sign_up')}
+                  onClick={handleSignUp}
                   className="btn btn-primary"
                 >
                   Sign Up
@@ -56,4 +65,6 @@ export default function Navigation() {
       </div>
     </nav>
   )
-}
+})
+
+export default Navigation

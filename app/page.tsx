@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import Image from 'next/image'
+import { useEffect, useState, useCallback } from 'react'
+import OptimizedImage from '@/components/optimized-image'
 import { supabase } from '@/lib/supabase'
 import { Form } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
@@ -10,7 +10,9 @@ import { Check, Sparkles, Star } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import { useAuthModal } from '@/lib/auth-modal-context'
 import { useConfirmation } from '@/lib/confirmation-context'
+import { useForms } from '@/lib/hooks/use-forms'
 import ProtectedRoute from '@/components/protected-route'
+import FormCard from '@/components/form-card'
 
 function WelcomePage() {
   const { openModal } = useAuthModal()
@@ -161,7 +163,7 @@ function WelcomePage() {
             </div>
             <div className="card glow-orange">
               <div className="aspect-square rounded-xl overflow-hidden">
-                <Image
+                <OptimizedImage
                   src="/sampleForm.png"
                   alt="Form Builder Interface - FORMETHICA"
                   width={600}
@@ -333,58 +335,29 @@ interface FormWithSubmissions extends Form {
 }
 
 function DashboardContent() {
-  const { user } = useAuth()
   const { confirm, showSuccess, showError } = useConfirmation()
-  const [forms, setForms] = useState<FormWithSubmissions[]>([])
-  const [loading, setLoading] = useState(true)
+  const { forms, loading, error, deleteForm: deleteFormHook } = useForms()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
+  // Show error if there's one from the hook
   useEffect(() => {
-    if (user) {
-      fetchForms()
+    if (error) {
+      showError('Error', error)
     }
-  }, [user])
+  }, [error, showError])
 
-  const fetchForms = async () => {
-    try {
-      // Fetch forms with submission counts
-      const { data, error } = await supabase
-        .from('forms')
-        .select(`
-          *,
-          form_submissions(count)
-        `)
-        .eq('user_id', user?.id || '')
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-
-      // Transform the data to include submission count
-      const formsWithCounts = (data || []).map(form => ({
-        ...form,
-        submission_count: form.form_submissions?.[0]?.count || 0
-      })) as unknown as FormWithSubmissions[]
-
-      setForms(formsWithCounts)
-    } catch (error) {
-      console.error('Error fetching forms:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = useCallback((text: string, event: React.MouseEvent) => {
     if (typeof window === 'undefined' || !navigator.clipboard) {
       return
     }
 
     navigator.clipboard.writeText(text)
     // Show a temporary success message
-    const button = event?.target as HTMLButtonElement
+    const button = event.target as HTMLButtonElement
     if (button) {
       const originalText = button.innerHTML
       button.innerHTML = 'Copied!'
@@ -392,39 +365,29 @@ function DashboardContent() {
         button.innerHTML = originalText
       }, 2000)
     }
-  }
+  }, [])
 
-  const getShortUrl = (shortCode: string) => {
+  const getShortUrl = useCallback((shortCode: string) => {
     if (typeof window === 'undefined') {
       return `/s/${shortCode}` // Fallback for SSR
     }
     return `${window.location.origin}/s/${shortCode}`
-  }
+  }, [])
 
-  const deleteForm = async (id: string) => {
+  const handleDeleteForm = useCallback(async (id: string) => {
     confirm(
       'Delete Form',
       'Are you sure you want to delete this form? This action cannot be undone and will also delete all associated submissions.',
       async () => {
-        try {
-          const { error } = await supabase
-            .from('forms')
-            .delete()
-            .eq('id', id)
-
-          if (error) {
-            showError('Delete Failed', `Failed to delete the form: ${error.message}`)
-            throw error
-          }
-
-          setForms(forms.filter(form => form.id !== id))
+        const success = await deleteFormHook(id)
+        if (success) {
           showSuccess('Form Deleted', 'The form has been successfully deleted.')
-        } catch (error) {
-          console.error('Error deleting form:', error)
+        } else {
+          showError('Delete Failed', 'Failed to delete the form. Please try again.')
         }
       }
     )
-  }
+  }, [confirm, showSuccess, showError, deleteFormHook])
 
   if (loading) {
     return (
@@ -461,86 +424,14 @@ function DashboardContent() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {forms.map((form) => (
-            <div key={form.id} className="card group cursor-default">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-semibold text-white truncate group-hover:text-emerald-300 transition-colors">
-                  {form.title}
-                </h3>
-                <span className={form.is_active ? 'badge-active' : 'badge-inactive'}>
-                  {form.is_active ? 'Active' : 'Inactive'}
-                </span>
-              </div>
-
-              {form.description && (
-                <p className="text-white/70 text-sm mb-4 line-clamp-2">
-                  {form.description}
-                </p>
-              )}
-
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="glass-dark rounded-lg p-3 text-center">
-                  <div className="flex items-center justify-center mb-1">
-                    <BarChartIcon className="w-4 h-4 text-emerald-400 mr-1" />
-                    <span className="text-xs text-white/60">Responses</span>
-                  </div>
-                  <div className="text-lg font-semibold text-white">{form.submission_count || 0}</div>
-                </div>
-                <div className="glass-dark rounded-lg p-3 text-center">
-                  <div className="flex items-center justify-center mb-1">
-                    <CalendarIcon className="w-4 h-4 text-orange-400 mr-1" />
-                    <span className="text-xs text-white/60">Fields</span>
-                  </div>
-                  <div className="text-lg font-semibold text-white">{form.fields.length}</div>
-                </div>
-              </div>
-
-              <div className="text-sm text-white/60 mb-4">
-                <p className="flex items-center">
-                  <CalendarIcon className="w-3 h-3 mr-1" />
-                  Created {formatDate(form.created_at || '')}
-                </p>
-              </div>
-
-              <div className="mb-6">
-                <div className="flex items-center justify-between text-sm mb-2">
-                  <span className="text-white/60">Share Form:</span>
-                  {mounted && (
-                    <button
-                      onClick={() => copyToClipboard(getShortUrl(form.short_url))}
-                      className="flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer"
-                    >
-                      <Share2Icon className="w-4 h-4" />
-                      <span>Copy Link</span>
-                    </button>
-                  )}
-                </div>
-                <code className="glass px-3 py-2 rounded-lg text-xs block truncate text-white/80">
-                  {mounted ? getShortUrl(form.short_url) : `/s/${form.short_url}`}
-                </code>
-              </div>
-
-              <div className="flex space-x-2">
-                <a
-                  href={`/submissions/${form.id}`}
-                  className="flex-1 btn btn-primary text-center text-sm glow-emerald"
-                >
-                  <BarChartIcon className="w-4 h-4 inline mr-1" />
-                  View Responses
-                </a>
-                <a
-                  href={`/edit/${form.id}`}
-                  className="btn btn-secondary text-sm"
-                >
-                  <Pencil1Icon className="w-4 h-4" />
-                </a>
-                <button
-                  onClick={() => deleteForm(form.id)}
-                  className="btn btn-danger text-sm cursor-pointer"
-                >
-                  <TrashIcon className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+            <FormCard
+              key={form.id}
+              form={form}
+              mounted={mounted}
+              onCopyLink={copyToClipboard}
+              onDelete={handleDeleteForm}
+              getShortUrl={getShortUrl}
+            />
           ))}
         </div>
       )}
