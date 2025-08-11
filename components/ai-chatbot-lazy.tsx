@@ -15,7 +15,15 @@ const AIChatbotLazy = memo(function AIChatbotLazy() {
 
   if (!isLoaded) {
     return (
-      <div className="fixed bottom-6 right-6 z-50">
+      <div
+        className="fixed bottom-6 right-6"
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          zIndex: 9998
+        }}
+      >
         <button
           onClick={handleToggle}
           className="btn btn-primary rounded-full p-4 glow-emerald shadow-lg hover:scale-110 transition-transform"
@@ -29,7 +37,15 @@ const AIChatbotLazy = memo(function AIChatbotLazy() {
 
   return (
     <Suspense fallback={
-      <div className="fixed bottom-6 right-6 z-50">
+      <div
+        className="fixed bottom-6 right-6"
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          zIndex: 9998
+        }}
+      >
         <div className="btn btn-primary rounded-full p-4 glow-emerald shadow-lg">
           <div className="spinner h-6 w-6"></div>
         </div>

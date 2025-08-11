@@ -1,25 +1,47 @@
 'use client'
 
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
-import { useAuthModal } from '@/lib/auth-modal-context'
 import { FileText } from 'lucide-react'
 import UserDropdown from './user-dropdown'
 
 const Navigation = memo(function Navigation() {
   const { user, loading } = useAuth()
-  const { openModal } = useAuthModal()
+  const router = useRouter()
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 50
+      setScrolled(isScrolled)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const handleSignIn = useCallback(() => {
-    openModal('sign_in')
-  }, [openModal])
+    router.push('/auth?type=signin')
+  }, [router])
 
   const handleSignUp = useCallback(() => {
-    openModal('sign_up')
-  }, [openModal])
+    router.push('/auth?type=signup')
+  }, [router])
 
   return (
-    <nav className="nav-glass">
+    <nav
+      className={`nav-glass ${scrolled ? 'scrolled' : ''}`}
+      style={{
+        position: 'fixed',
+        top: '20px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 9999,
+        width: 'calc(100% - 40px)',
+        maxWidth: '1200px'
+      }}
+    >
       <div className="px-6">
         <div className="flex justify-between h-16">
           <div className="flex items-center">

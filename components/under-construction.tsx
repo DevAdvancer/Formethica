@@ -15,7 +15,7 @@ export default function UnderConstruction({
   showHomeButton = true
 }: UnderConstructionProps) {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12">
+    <div className="page-content flex items-center justify-center px-4 py-12">
       <div className="max-w-2xl mx-auto text-center w-full">
         {/* Back Button */}
         <div className="mb-8">

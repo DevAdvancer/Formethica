@@ -53,45 +53,65 @@ class QueryOptimizer {
     })
   }
 
-  // Optimized submission count query
-  async getFormSubmissionCounts(formIds: string[]) {
-    if (formIds.length === 0) return []
+  // Single-query forms + submission counts using PostgREST relationship aggregation
+  // Requires a foreign key forms.id -> form_submissions.form_id (present in schema)
+  // Returns each form with form_submissions: [{ count: number }]
+  // We will map that to submission_count for the UI
+  async getFormsWithCounts(userId: string, options: QueryOptions = {}) {
+    const {
+      orderBy = { column: 'created_at', ascending: false },
+      limit,
+      offset
+    } = options
 
-    return performanceMonitor.measureAsync('submission-counts-query', async () => {
-      const { data, error } = await supabase
-        .from('form_submissions')
-        .select('form_id')
-        .in('form_id', formIds)
+    return performanceMonitor.measureAsync('forms-with-embedded-counts', async () => {
+      let query = supabase
+        .from('forms')
+        .select(`
+          id,
+          title,
+          description,
+          fields,
+          created_at,
+          updated_at,
+          user_id,
+          short_url,
+          is_active,
+          form_submissions(count)
+        `)
+        .eq('user_id', userId)
 
-      if (error) throw error
+      if (orderBy) {
+        query = query.order(orderBy.column, { ascending: orderBy.ascending ?? false })
+      }
 
-      // Count submissions per form
-      const counts = formIds.map(formId => ({
-        form_id: formId,
-        count: data?.filter(sub => sub.form_id === formId).length || 0
-      }))
+      if (limit) {
+        query = query.limit(limit)
+      }
 
-      return counts
+      if (offset) {
+        query = query.range(offset, offset + (limit || 10) - 1)
+      }
+
+      return query
     })
   }
 
-  // Batch query for forms with submission counts
+  // Batch query for forms with submission counts (single round-trip)
   async getFormsWithSubmissionCounts(userId: string, options: QueryOptions = {}) {
     return performanceMonitor.measureAsync('forms-with-counts-batch', async () => {
-      // First get forms
-      const { data: forms, error: formsError } = await this.getForms(userId, options)
+      const { data, error } = await this.getFormsWithCounts(userId, options)
 
-      if (formsError) throw formsError
-      if (!forms || forms.length === 0) return []
+      if (error) throw error
+      if (!data || data.length === 0) return []
 
-      // Then get submission counts in batch
-      const formIds = forms.map(form => form.id)
-      const submissionCounts = await this.getFormSubmissionCounts(formIds)
-
-      // Merge the data
-      return forms.map(form => ({
+      // Map embedded counts
+      // data[i].form_submissions is an array like [{ count: number }]
+      return data.map((form: any) => ({
         ...form,
-        submission_count: submissionCounts.find(sc => sc.form_id === form.id)?.count || 0
+        submission_count: Array.isArray(form.form_submissions) && form.form_submissions[0]?.count
+          ? form.form_submissions[0].count
+          : 0
       }))
     })
   }

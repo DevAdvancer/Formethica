@@ -13,7 +13,7 @@ interface FormWithSubmissions {
   updated_at: string | null
   user_id: string
   short_url: string
-  is_active: boolean | null
+  is_active: boolean
   submission_count: number
 }
 
@@ -22,6 +22,7 @@ interface FormCardProps {
   mounted: boolean
   onCopyLink: (shortCode: string, event: React.MouseEvent) => void
   onDelete: (id: string) => void
+  onToggleActive: (id: string, isActive: boolean) => void
   getShortUrl: (shortCode: string) => string
 }
 
@@ -30,6 +31,7 @@ const FormCard = memo(function FormCard({
   mounted,
   onCopyLink,
   onDelete,
+  onToggleActive,
   getShortUrl
 }: FormCardProps) {
   const handleCopyClick = useCallback((e: React.MouseEvent) => {
@@ -40,15 +42,25 @@ const FormCard = memo(function FormCard({
     onDelete(form.id)
   }, [form.id, onDelete])
 
+  const handleToggleActive = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    onToggleActive(form.id, !form.is_active)
+  }, [form.id, form.is_active, onToggleActive])
+
   return (
     <div className="card group cursor-default">
       <div className="flex justify-between items-start mb-4">
         <h3 className="text-lg font-semibold text-white truncate group-hover:text-emerald-300 transition-colors">
           {form.title}
         </h3>
-        <span className={form.is_active ? 'badge-active' : 'badge-inactive'}>
+        <button
+          onClick={handleToggleActive}
+          className={`${form.is_active ? 'badge-active' : 'badge-inactive'} cursor-pointer hover:opacity-80 transition-opacity`}
+          title={`Click to ${form.is_active ? 'deactivate' : 'activate'} this form`}
+        >
           {form.is_active ? 'Active' : 'Inactive'}
-        </span>
+        </button>
       </div>
 
       {form.description && (

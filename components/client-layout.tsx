@@ -17,9 +17,9 @@ export default function ClientLayout({
     <AuthProvider>
       <AuthModalProvider>
         <ConfirmationProvider>
-          <div className="min-h-screen flex flex-col">
+          <div className="min-h-screen">
             <Navigation />
-            <main className="relative z-10 flex-1">{children}</main>
+            <main className="relative z-10 min-h-screen">{children}</main>
             <Footer />
             <AIChatbotLazy />
             <AuthModalWrapper />

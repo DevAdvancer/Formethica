@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, useMemo, useCallback } 
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from './supabase'
 import { UserService, UserProfile } from './user-service'
+import { SessionManager } from './session-manager'
 
 interface AuthContextType {
   user: User | null
@@ -58,6 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let isMounted = true
+    let refreshInterval: NodeJS.Timeout
 
     // Get initial session
     const initializeAuth = async () => {
@@ -72,6 +74,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (session?.user?.email) {
           await fetchUserProfile(session.user.email)
         }
+
+        // Set up automatic session management
+        if (session) {
+          SessionManager.setupAutoRefresh()
+        }
       } catch (error) {
         console.error('Error initializing auth:', error)
       } finally {
@@ -80,6 +87,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
     }
+
+
 
     initializeAuth()
 
@@ -99,8 +108,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
           await fetchUserProfile(session.user.email)
         }
+
+        // Setup session management for new sessions
+        if (event === 'SIGNED_IN' && session) {
+          SessionManager.setupAutoRefresh()
+        }
       } else {
         setUserProfile(null)
+        // Clear session management when signed out
+        SessionManager.clearAutoRefresh()
       }
 
       setLoading(false)
@@ -108,6 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       isMounted = false
+      SessionManager.clearAutoRefresh()
       subscription.unsubscribe()
     }
   }, [fetchUserProfile])

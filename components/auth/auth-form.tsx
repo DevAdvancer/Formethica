@@ -1,5 +1,6 @@
 'use client'
 
+
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { supabase } from '@/lib/supabase'
@@ -9,6 +10,8 @@ interface AuthFormProps {
 }
 
 export default function AuthForm({ view = 'sign_in' }: AuthFormProps) {
+
+
   return (
     <div className="max-w-md mx-auto">
       <Auth
@@ -34,8 +37,9 @@ export default function AuthForm({ view = 'sign_in' }: AuthFormProps) {
                 inputText: 'rgba(255, 255, 255, 0.95)',
                 inputLabelText: 'rgba(255, 255, 255, 0.9)',
                 inputPlaceholder: 'rgba(255, 255, 255, 0.6)',
-                messageText: 'rgba(255, 255, 255, 0.8)',
-                messageTextDanger: 'rgb(248, 113, 113)',
+                messageText: 'rgba(255, 255, 255, 0.9)',
+                messageTextDanger: '#f87171',
+                messageTextSuccess: '#34d399',
                 anchorTextColor: 'rgb(52, 211, 153)',
                 anchorTextHoverColor: 'rgb(16, 185, 129)',
               },
@@ -81,7 +85,7 @@ export default function AuthForm({ view = 'sign_in' }: AuthFormProps) {
             input: 'glass text-white placeholder-white/60 focus:ring-2 focus:ring-emerald-400/50',
             label: 'text-white/90 font-medium',
             loader: 'text-emerald-400',
-            message: 'text-white/80 text-sm',
+            message: 'auth-message-styled',
           },
         }}
         providers={[]}

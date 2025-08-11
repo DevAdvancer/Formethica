@@ -9,7 +9,11 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    flowType: 'pkce'
+    flowType: 'pkce',
+    // Refresh token 5 minutes before expiry
+    refreshTokenMargin: 300,
+    // Store session in localStorage (persistent across browser sessions)
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined
   },
   global: {
     headers: {

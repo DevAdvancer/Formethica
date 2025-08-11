@@ -73,6 +73,17 @@ npm install
 4. Enable Row Level Security (RLS) on all tables
 5. Set up authentication providers if needed
 
+#### Auth URLs and Email templates
+
+- In Supabase Dashboard → Authentication → URL Configuration:
+  - Site URL: set to your `NEXT_PUBLIC_APP_URL` (for local: `http://localhost:3000`)
+  - Redirect URLs: add `http://localhost:3000/auth/callback` and your production `https://yourdomain.com/auth/callback`
+- In Supabase Dashboard → Authentication → Email Templates, you can use the HTML templates provided in `supabase/templates/`:
+  - `supabase/templates/confirm-account.html`
+  - `supabase/templates/reset-password.html`
+
+Both templates use the Supabase variables like `{{ .Email }}`, `{{ .ActionURL }}`, and `{{ .SiteURL }}`. Paste the content into the respective template editors in Supabase. The call-to-action automatically points to your configured redirect URL.
+
 ### 3. Set up Google Gemini AI
 
 1. Go to [Google AI Studio](https://aistudio.google.com/)
@@ -96,6 +107,9 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
+# App URL used by Supabase Auth email links
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
 # Google Gemini AI
 GEMINI_API_KEY=your_gemini_api_key
 
@@ -103,7 +117,6 @@ GEMINI_API_KEY=your_gemini_api_key
 NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY=your_web3forms_access_key
 
 # App Configuration
-NEXT_PUBLIC_APP_URL=http://localhost:3000
 NEXTAUTH_SECRET=your_random_secret_key
 
 # Optional: Custom domain for short URLs
@@ -356,6 +369,26 @@ The app supports both anonymous and authenticated users:
    - Update `NEXT_PUBLIC_APP_URL` to your production domain
    - Test all features including AI and database connections
    - Set up custom domain if desired
+   - In Supabase → Authentication → URL Configuration, update Site URL and Redirect URLs to your production domain
+
+## Supabase Email Templates
+
+This repo includes ready-to-use Supabase Auth email templates in `supabase/templates/`:
+
+- `confirm-account.html`: Sent on sign-up to confirm the user's email
+- `reset-password.html`: Sent when a user requests a password reset
+
+How to use:
+
+1. Open Supabase Dashboard → Authentication → Email Templates
+2. Select the corresponding template type
+3. Paste the HTML from the file into the editor
+4. Save and send yourself a test email
+
+Notes:
+
+- The templates reference `{{ .ActionURL }}` which Supabase injects with the appropriate link.
+- Ensure your Site URL and Redirect URLs are configured to include `/auth/callback`. This route is implemented in `app/auth/callback/route.ts` and exchanges the auth code for a session.
 
 ### Alternative Platforms
 

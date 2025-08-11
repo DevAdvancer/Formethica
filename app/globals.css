@@ -13,7 +13,6 @@ html {
 body {
   margin: 0;
   padding: 0;
-  padding-top: 100px; /* Space for floating navbar */
   font-family: "Inter", system-ui, sans-serif;
   background: linear-gradient(-45deg, #0f0f0f, #1a1a1a, #2d1b0e, #1f2937);
   background-size: 400% 400%;
@@ -26,6 +25,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   will-change: auto;
+  /* Ensure fixed positioning works correctly */
+  position: relative;
+  overflow-x: hidden;
 }
 
 /* Reduce motion for users who prefer it */
@@ -104,10 +106,8 @@ body {
   background: linear-gradient(-45deg, #0f0f0f, #1a1a1a, #2d1b0e, #1f2937);
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
-  /* GPU acceleration */
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
+  /* Avoid transform/perspective on ancestors to keep position: fixed working */
+  will-change: background-position;
 }
 
 /* Glass morphism base */
@@ -306,21 +306,84 @@ body {
   transform: scale(1.05);
 }
 
-/* Navigation */
+/* Navigation - High specificity to override Tailwind */
+nav.nav-glass,
 .nav-glass {
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  border-radius: 16px;
-  max-width: 1200px;
-  width: calc(100% - 40px);
+  position: fixed !important;
+  top: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: calc(100% - 40px) !important;
+  max-width: 1200px !important;
+  z-index: 9999 !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  background: rgba(0, 0, 0, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  animation: navSlideIn 0.6s ease-out !important;
+}
+
+nav.nav-glass:hover,
+.nav-glass:hover {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4) !important;
+  transform: translateX(-50%) translateY(-1px) !important;
+}
+
+nav.nav-glass.scrolled,
+.nav-glass.scrolled {
+  background: rgba(0, 0, 0, 0.85) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Navigation slide-in animation */
+@keyframes navSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Mobile responsive navbar */
+@media (max-width: 768px) {
+  nav.nav-glass,
+  .nav-glass {
+    top: 10px !important;
+    width: calc(100% - 20px) !important;
+    border-radius: 12px !important;
+  }
+
+  body {
+    padding-top: 90px !important;
+  }
+}
+
+/* Tablet responsive navbar */
+@media (max-width: 1024px) {
+  nav.nav-glass,
+  .nav-glass {
+    width: calc(100% - 30px) !important;
+    max-width: 900px !important;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  nav.nav-glass,
+  .nav-glass {
+    top: 8px !important;
+    width: calc(100% - 16px) !important;
+    border-radius: 10px !important;
+  }
 }
 
 /* Glow effects */
@@ -338,6 +401,18 @@ body {
 
 .glow-red {
   box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.2);
+}
+
+.glow-cyan {
+  box-shadow: 0 10px 25px -5px rgba(34, 211, 238, 0.2);
+}
+
+.glow-purple {
+  box-shadow: 0 10px 25px -5px rgba(168, 85, 247, 0.2);
+}
+
+.glow-pink {
+  box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.2);
 }
 
 /* Loading spinner */
@@ -386,7 +461,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9998;
   padding: 1rem;
 }
 
@@ -406,11 +481,7 @@ body {
 }
 
 /* Animated background */
-.animated-bg {
-  background: linear-gradient(-45deg, #0f0f0f, #1a1a1a, #2d1b0e, #1f2937);
-  background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
-}
+/* Duplicate definition cleanup ensured above */
 
 /* Additional utility classes */
 .solid-text-emerald {
@@ -532,15 +603,6 @@ body {
 
 /* Mobile responsive */
 @media (max-width: 768px) {
-  body {
-    padding-top: 80px;
-  }
-
-  .nav-glass {
-    top: 10px;
-    width: calc(100% - 20px);
-  }
-
   /* Mobile chatbot */
   .mobile-chatbot {
     position: fixed;
@@ -549,5 +611,125 @@ body {
     left: 10px;
     width: auto;
     height: 400px;
+  }
+}
+/* Glow effects */
+.glow-emerald {
+  box-shadow: 0 0 20px rgba(52, 211, 153, 0.15), 0 0 40px rgba(52, 211, 153, 0.1);
+}
+
+.glow-emerald:hover {
+  box-shadow: 0 0 30px rgba(52, 211, 153, 0.2), 0 0 60px rgba(52, 211, 153, 0.15);
+}
+
+/* Card styles */
+.card {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+}
+/* Supabase Auth Message Styling */
+.auth-message-styled {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding: 12px 16px !important;
+  border-radius: 12px !important;
+  margin: 16px 0 !important;
+  border: 1px solid !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  transition: all 0.3s ease !important;
+  animation: slideIn 0.3s ease-out !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #f87171 !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15) !important;
+}
+
+/* Target Supabase Auth UI messages directly */
+[data-supabase-auth-ui="message"] {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding: 12px 16px !important;
+  border-radius: 12px !important;
+  margin: 16px 0 !important;
+  border: 1px solid !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  transition: all 0.3s ease !important;
+  animation: slideIn 0.3s ease-out !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #f87171 !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15) !important;
+}
+
+/* Success messages */
+[data-supabase-auth-ui="message"][data-status="success"] {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  color: #34d399 !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15) !important;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Page content spacing to ensure content appears below floating navbar */
+.page-content {
+  padding-top: 120px;
+  min-height: calc(100vh - 120px);
+  position: relative;
+  z-index: 1;
+}
+
+.page-content-full {
+  padding-top: 100px;
+  min-height: calc(100vh - 100px);
+  position: relative;
+  z-index: 1;
+}
+
+.page-content-hero {
+  padding-top: 100px;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* Mobile page content spacing */
+@media (max-width: 768px) {
+  .page-content {
+    padding-top: 100px;
+    min-height: calc(100vh - 100px);
+  }
+
+  .page-content-full {
+    padding-top: 90px;
+    min-height: calc(100vh - 90px);
+  }
+
+  .page-content-hero {
+    padding-top: 90px;
+    min-height: 100vh;
   }
 }

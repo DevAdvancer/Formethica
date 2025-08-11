@@ -83,14 +83,28 @@ export default function AIChatbot() {
       {/* Chat Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 z-50 glow-emerald cursor-pointer"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 glow-emerald cursor-pointer"
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          zIndex: 9998
+        }}
       >
         <ChatBubbleIcon className="w-6 h-6 text-white" />
       </button>
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[500px] glass-dark-ai rounded-2xl shadow-2xl border border-white/10 z-50 flex flex-col">
+        <div
+          className="fixed bottom-24 right-6 w-96 h-[500px] glass-dark-ai rounded-2xl shadow-2xl border border-white/10 flex flex-col"
+          style={{
+            position: 'fixed',
+            bottom: '120px',
+            right: '24px',
+            zIndex: 9998
+          }}
+        >
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-white/10">
             <div className="flex items-center space-x-3">

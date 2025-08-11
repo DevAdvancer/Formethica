@@ -16,10 +16,17 @@ export default function ShortUrlRedirect() {
 
   const handleRedirect = async (shortCode: string) => {
     try {
-      // Get the short URL record
+      // Get the short URL record with form information
       const { data: shortUrl, error } = await supabase
         .from('short_urls')
-        .select('*')
+        .select(`
+          *,
+          forms!inner(
+            id,
+            title,
+            is_active
+          )
+        `)
         .eq('short_code', shortCode)
         .single()
 
@@ -28,13 +35,13 @@ export default function ShortUrlRedirect() {
         return
       }
 
-      // Increment click count
+      // Always increment click count (for analytics)
       await supabase
         .from('short_urls')
         .update({ clicks: (shortUrl.clicks || 0) + 1 })
         .eq('id', shortUrl.id)
 
-      // Redirect to the original URL
+      // Redirect to the original URL (form will handle inactive state)
       router.push(shortUrl.original_url)
     } catch (error) {
       console.error('Error handling redirect:', error)
@@ -43,10 +50,12 @@ export default function ShortUrlRedirect() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="page-content">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="card text-center glow-blue">
         <div className="spinner h-12 w-12 mx-auto mb-6"></div>
         <p className="text-white/80 text-lg">Redirecting to form...</p>
+      </div>
       </div>
     </div>
   )
