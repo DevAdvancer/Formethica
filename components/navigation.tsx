@@ -3,7 +3,7 @@
 import { memo, useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
-import { FileText } from 'lucide-react'
+import Image from 'next/image'
 import UserDropdown from './user-dropdown'
 
 const Navigation = memo(function Navigation() {
@@ -46,7 +46,14 @@ const Navigation = memo(function Navigation() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <a href="/" className="flex items-center space-x-2 hover:scale-105 transition-transform cursor-pointer">
-              <FileText className="h-8 w-8 text-emerald-400" />
+              <Image
+                src="/formethica-logo.svg"
+                alt="Formethica logo"
+                width={32}
+                height={32}
+                priority
+                className="h-8 w-8"
+              />
               <h1 className="text-xl font-bold text-white/90">
                 Formethica
               </h1>

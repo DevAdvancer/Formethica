@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { Github, Twitter, Linkedin, Mail, Heart, ExternalLink } from 'lucide-react'
 
@@ -80,9 +81,13 @@ export default function Footer() {
             {/* Brand Section */}
             <div className="lg:col-span-2">
               <Link href="/" className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">F</span>
-                </div>
+                <Image
+                  src="/formethica-logo.svg"
+                  alt="Formethica logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8"
+                />
                 <span className="text-xl font-bold text-white">Formethica</span>
               </Link>
               <p className="text-gray-400 text-sm mb-6 max-w-sm">
