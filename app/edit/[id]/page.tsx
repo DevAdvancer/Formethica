@@ -116,10 +116,12 @@ function EditFormContent() {
 
   if (!mounted || authLoading || loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center">
-          <div className="spinner h-8 w-8 mx-auto mb-4"></div>
-          <p className="text-white/60">Loading form...</p>
+      <div className="page-content">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <div className="spinner h-8 w-8 mx-auto mb-4"></div>
+            <p className="text-white/60">Loading form...</p>
+          </div>
         </div>
       </div>
     )
@@ -127,17 +129,20 @@ function EditFormContent() {
 
   if (!form) {
     return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="card text-center glow-amber">
-          <h1 className="text-2xl font-bold text-white mb-4">Form Not Found</h1>
-          <p className="text-white/70">The form you're trying to edit doesn't exist.</p>
+      <div className="page-content">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="card text-center glow-amber">
+            <h1 className="text-2xl font-bold text-white mb-4">Form Not Found</h1>
+            <p className="text-white/70">The form you're trying to edit doesn't exist.</p>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="page-content">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white">Edit Form</h1>
         <p className="text-white/70 mt-2">Update your form details and fields</p>
@@ -313,6 +318,7 @@ function EditFormContent() {
           </div>
         </div>
       </form>
+      </div>
     </div>
   )
 }

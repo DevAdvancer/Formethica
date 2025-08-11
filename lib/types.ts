@@ -16,7 +16,7 @@ export interface Form {
   updated_at: string | null
   user_id: string
   short_url: string
-  is_active: boolean | null
+  is_active: boolean
 }
 
 export interface FormSubmission {
