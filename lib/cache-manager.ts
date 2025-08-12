@@ -80,9 +80,24 @@ class CacheManager {
 // Global cache instance
 export const cacheManager = new CacheManager()
 
-// Auto cleanup every 5 minutes
+// Auto cleanup every 5 minutes with production optimizations
 if (typeof window !== 'undefined') {
   setInterval(() => {
     cacheManager.cleanup()
   }, 5 * 60 * 1000)
+
+  // Production performance monitoring
+  if (process.env.NODE_ENV === 'production' &&
+      process.env.NEXT_PUBLIC_ENABLE_PERFORMANCE_MONITORING === 'true') {
+    // Log cache stats periodically in production for monitoring
+    setInterval(() => {
+      const stats = cacheManager.getStats()
+      if (stats.size > 10) { // Only log if significant cache usage
+        console.log('📊 Cache performance:', {
+          size: stats.size,
+          utilization: `${Math.round((stats.size / 100) * 100)}%`
+        })
+      }
+    }, 10 * 60 * 1000) // Every 10 minutes
+  }
 }

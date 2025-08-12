@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Form } from '@/lib/types'
 import { useAuth } from '@/lib/auth-context'
+import { PERFORMANCE_CONFIG, PerformanceOptimizer } from '@/lib/performance-config'
+import { cacheManager } from '@/lib/cache-manager'
 
 interface FormWithSubmissions extends Form {
   submission_count: number
@@ -24,8 +26,8 @@ export function useFormsFast(): UseFormsReturn {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Ultra-fast fetch - just get forms, no submission counts
-  const fetchForms = useCallback(async () => {
+  // Ultra-fast fetch with caching and performance monitoring
+  const fetchForms = useCallback(async (useCache = true) => {
     if (!user?.id) {
       setForms([])
       setLoading(false)
@@ -34,33 +36,59 @@ export function useFormsFast(): UseFormsReturn {
 
     try {
       setError(null)
+
+      // Check cache first
+      const cacheKey = `forms-fast-${user.id}`
+      if (useCache && cacheManager.has(cacheKey)) {
+        const cachedForms = cacheManager.get<FormWithSubmissions[]>(cacheKey)
+        if (cachedForms) {
+          setForms(cachedForms)
+          setLoading(false)
+          console.log('🚀 Forms loaded from cache:', cachedForms.length)
+          return
+        }
+      }
+
       setLoading(true)
+      PerformanceOptimizer.startTimer('forms-fetch')
 
       console.log('📊 Fetching forms for user:', user.id)
 
-      // Simple, fast query for forms only
+      // Get complete form data including fields
       const { data, error: fetchError } = await supabase
         .from('forms')
-        .select('id, title, description, created_at, updated_at, user_id, short_url, is_active')
+        .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
+        .limit(PERFORMANCE_CONFIG.BATCH.MAX_FORMS_PER_QUERY)
 
-      console.log('📊 Forms query result:', { data: data?.length, error: fetchError })
+      const fetchDuration = PerformanceOptimizer.endTimer('forms-fetch')
+      PerformanceOptimizer.logQuery('Forms fetch', fetchDuration, data?.length)
 
       if (fetchError) {
         console.error('❌ Forms fetch error:', fetchError)
         throw fetchError
       }
 
-      // Set forms with zero submission counts
+      // Set forms with zero submission counts initially for fast UI
       const formsWithCounts = (data || []).map(form => ({
         ...form,
-        fields: [], // Empty fields for now
         submission_count: 0
       }))
 
       setForms(formsWithCounts)
+
+      // Cache the results
+      cacheManager.set(cacheKey, formsWithCounts, PERFORMANCE_CONFIG.CACHE.FORMS_LIST)
+
       console.log('✅ Forms loaded successfully:', formsWithCounts.length)
+
+      // Fetch submission counts in background if we have forms
+      if (data && data.length > 0) {
+        setTimeout(() => {
+          fetchSubmissionCountsBackground(data, user.id, cacheKey)
+        }, PERFORMANCE_CONFIG.BACKGROUND.SUBMISSION_COUNTS_DELAY)
+      }
 
     } catch (err) {
       console.error('💥 Error fetching forms:', err)
@@ -70,6 +98,52 @@ export function useFormsFast(): UseFormsReturn {
       setLoading(false)
     }
   }, [user?.id])
+
+  // Background submission count fetching with performance tracking
+  const fetchSubmissionCountsBackground = async (forms: any[], userId: string, cacheKey: string) => {
+    try {
+      PerformanceOptimizer.startTimer('submission-counts')
+
+      const formIds = forms.map(form => form.id)
+
+      // Get submission counts efficiently
+      const { data: countsData, error: countsError } = await supabase
+        .from('form_submissions')
+        .select('form_id')
+        .in('form_id', formIds)
+
+      const countsDuration = PerformanceOptimizer.endTimer('submission-counts')
+      PerformanceOptimizer.logQuery('Submission counts', countsDuration, countsData?.length)
+
+      if (countsError) {
+        console.warn('Failed to get submission counts:', countsError)
+        return
+      }
+
+      // Count submissions per form
+      const submissionCounts = countsData?.reduce((acc, submission) => {
+        acc[submission.form_id] = (acc[submission.form_id] || 0) + 1
+        return acc
+      }, {} as Record<string, number>) || {}
+
+      // Update forms with actual counts
+      const updatedForms = forms.map(form => ({
+        ...form,
+        submission_count: submissionCounts[form.id] || 0
+      }))
+
+      setForms(updatedForms)
+
+      // Update cache with submission counts
+      cacheManager.set(cacheKey, updatedForms, PERFORMANCE_CONFIG.CACHE.FORMS_LIST)
+
+      console.log('✅ Submission counts updated in background')
+
+    } catch (err) {
+      console.warn('Error fetching submission counts:', err)
+      // Don't set error state for background fetch
+    }
+  }
 
   // Simple delete
   const deleteForm = useCallback(async (id: string): Promise<boolean> => {
@@ -127,12 +201,33 @@ export function useFormsFast(): UseFormsReturn {
     }
   }, [user?.id])
 
-  const refetch = useCallback(() => fetchForms(), [fetchForms])
+  const refetch = useCallback(() => fetchForms(false), [fetchForms])
 
-  // Fast initial load
+  // Fast initial load with timeout protection
   useEffect(() => {
-    if (user?.id) {
-      fetchForms()
+    if (!user?.id) return
+
+    let timeoutId: NodeJS.Timeout
+
+    const loadWithTimeout = async () => {
+      // Set timeout to prevent infinite loading
+      timeoutId = setTimeout(() => {
+        setLoading(false)
+        setError('Loading timed out. Please refresh the page.')
+        console.warn('⏰ Forms fetch timed out')
+      }, PERFORMANCE_CONFIG.TIMEOUTS.FORMS_FETCH)
+
+      try {
+        await fetchForms()
+      } finally {
+        clearTimeout(timeoutId)
+      }
+    }
+
+    loadWithTimeout()
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId)
     }
   }, [user?.id, fetchForms])
 

@@ -17,7 +17,8 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   },
   global: {
     headers: {
-      'x-client-info': 'formethica-web'
+      'x-client-info': `formethica-web-${process.env.NODE_ENV}`,
+      'x-app-version': process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0'
     }
   },
   db: {
@@ -25,7 +26,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   },
   realtime: {
     params: {
-      eventsPerSecond: 10
+      eventsPerSecond: process.env.NODE_ENV === 'production' ? 5 : 10 // Reduce in production
     }
   }
 })
