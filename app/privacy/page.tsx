@@ -165,8 +165,8 @@ export default function PrivacyPage() {
                 If you have any questions about this Privacy Policy, please contact us:
               </p>
               <div className="glass-dark rounded-lg p-4">
-                <p className="text-white/80">Email: privacy@formcraft.ai</p>
-                <p className="text-white/80">Address: 123 Market Street, Suite 400, San Francisco, CA 94105</p>
+                <p className="text-white/80">Email: theabhirupkumar@gmail.com</p>
+                <p className="text-white/80">Address: Kolkata, West Bengal, India</p>
               </div>
             </div>
           </div>

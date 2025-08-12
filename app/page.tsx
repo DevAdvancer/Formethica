@@ -9,7 +9,6 @@ import { useConfirmation } from "@/lib/confirmation-context";
 import { useForms } from "@/lib/hooks/use-forms";
 import FormCard from "@/components/form-card";
 
-
 function WelcomePage() {
   const { openModal } = useAuthModal();
   const [mounted, setMounted] = useState(false);
@@ -399,7 +398,13 @@ function WelcomePage() {
 function DashboardContent() {
   const { user, userProfile } = useAuth();
   const { confirm, showSuccess, showError } = useConfirmation();
-  const { forms, loading, error, deleteForm: deleteFormHook, updateForm } = useForms();
+  const {
+    forms,
+    loading,
+    error,
+    deleteForm: deleteFormHook,
+    updateForm,
+  } = useForms();
   const [mounted, setMounted] = useState(false);
   const [dashboardStats, setDashboardStats] = useState({
     totalSubmissions: 0,
@@ -460,15 +465,15 @@ function DashboardContent() {
           await navigator.clipboard.writeText(fullUrl);
         } else {
           // Fallback for older browsers or non-HTTPS contexts
-          const textArea = document.createElement('textarea');
+          const textArea = document.createElement("textarea");
           textArea.value = fullUrl;
-          textArea.style.position = 'fixed';
-          textArea.style.left = '-999999px';
-          textArea.style.top = '-999999px';
+          textArea.style.position = "fixed";
+          textArea.style.left = "-999999px";
+          textArea.style.top = "-999999px";
           document.body.appendChild(textArea);
           textArea.focus();
           textArea.select();
-          document.execCommand('copy');
+          document.execCommand("copy");
           textArea.remove();
         }
 
@@ -485,8 +490,11 @@ function DashboardContent() {
           }, 2000);
         }
       } catch (error) {
-        console.error('Failed to copy to clipboard:', error);
-        showError("Copy Failed", "Failed to copy the link. Please try again or copy manually from the URL field.");
+        console.error("Failed to copy to clipboard:", error);
+        showError(
+          "Copy Failed",
+          "Failed to copy the link. Please try again or copy manually from the URL field."
+        );
       }
     },
     [showSuccess, showError]
@@ -554,18 +562,22 @@ function DashboardContent() {
 
         if (success) {
           showSuccess(
-            `Form ${isActive ? 'Activated' : 'Deactivated'}`,
-            `"${formTitle}" has been ${isActive ? 'activated' : 'deactivated'} successfully.`
+            `Form ${isActive ? "Activated" : "Deactivated"}`,
+            `"${formTitle}" has been ${
+              isActive ? "activated" : "deactivated"
+            } successfully.`
           );
           console.log("✅ Form status updated successfully");
         } else {
-          throw new Error('Update failed');
+          throw new Error("Update failed");
         }
       } catch (error) {
         console.error("💥 Error toggling form status:", error);
         showError(
           "Update Failed",
-          `Failed to ${isActive ? 'activate' : 'deactivate'} the form. Please try again.`
+          `Failed to ${
+            isActive ? "activate" : "deactivate"
+          } the form. Please try again.`
         );
       }
     },
@@ -606,13 +618,35 @@ function DashboardContent() {
     );
   }
 
+  // Early return if no user data is available
+  if (!user) {
+    return (
+      <div className="page-content">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <p className="text-white/60">
+              Unable to load user data. Please try refreshing the page.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="btn btn-primary mt-4">
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page-content">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">
-            {mounted ? (
+            {!mounted ? (
+              "Welcome! "
+            ) : (
               <span suppressHydrationWarning>
                 {getGreeting()},{" "}
                 {userProfile?.username ||
@@ -620,10 +654,8 @@ function DashboardContent() {
                   user?.user_metadata?.name ||
                   user?.email?.split("@")[0] ||
                   "there"}
-                !!
+                !
               </span>
-            ) : (
-              "Welcome! "
             )}
           </h1>
           <p className="text-white/70 text-lg">{getMotivationalMessage()}</p>
@@ -916,8 +948,22 @@ function DashboardContent() {
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
+  const [mounted, setMounted] = useState(false);
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
 
-  if (loading) {
+  useEffect(() => {
+    setMounted(true);
+
+    // Set a timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      setLoadingTimeout(true);
+    }, 5000); // 5 seconds timeout
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // Show loading only during initial auth check, with timeout
+  if (!mounted || (loading && !loadingTimeout)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -926,6 +972,11 @@ export default function Dashboard() {
         </div>
       </div>
     );
+  }
+
+  // If loading timed out, show welcome page as fallback
+  if (loadingTimeout && !user) {
+    return <WelcomePage />;
   }
 
   if (!user) {

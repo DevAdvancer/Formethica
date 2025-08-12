@@ -100,19 +100,62 @@ class QueryOptimizer {
   // Batch query for forms with submission counts (single round-trip)
   async getFormsWithSubmissionCounts(userId: string, options: QueryOptions = {}) {
     return performanceMonitor.measureAsync('forms-with-counts-batch', async () => {
-      const { data, error } = await this.getFormsWithCounts(userId, options)
+      try {
+        // Try the optimized embedded count query first
+        const { data, error } = await this.getFormsWithCounts(userId, options)
 
-      if (error) throw error
-      if (!data || data.length === 0) return []
+        if (error) {
+          console.warn('Embedded count query failed, falling back to separate queries:', error)
+          throw error
+        }
 
-      // Map embedded counts
-      // data[i].form_submissions is an array like [{ count: number }]
-      return data.map((form: any) => ({
-        ...form,
-        submission_count: Array.isArray(form.form_submissions) && form.form_submissions[0]?.count
-          ? form.form_submissions[0].count
-          : 0
-      }))
+        if (!data || data.length === 0) return []
+
+        // Map embedded counts
+        // data[i].form_submissions is an array like [{ count: number }]
+        return data.map((form: any) => ({
+          ...form,
+          submission_count: Array.isArray(form.form_submissions) && form.form_submissions[0]?.count
+            ? form.form_submissions[0].count
+            : 0
+        }))
+      } catch (embeddedError) {
+        console.warn('Embedded count query failed, using fallback approach:', embeddedError)
+
+        // Fallback: Get forms first, then get counts separately
+        const { data: formsData, error: formsError } = await this.getForms(userId, options)
+
+        if (formsError) throw formsError
+        if (!formsData || formsData.length === 0) return []
+
+        // Get submission counts for all forms in a single query
+        const formIds = formsData.map(form => form.id)
+        const { data: countsData, error: countsError } = await supabase
+          .from('form_submissions')
+          .select('form_id')
+          .in('form_id', formIds)
+
+        if (countsError) {
+          console.warn('Failed to get submission counts, defaulting to 0:', countsError)
+          // Return forms with 0 counts if count query fails
+          return formsData.map(form => ({
+            ...form,
+            submission_count: 0
+          }))
+        }
+
+        // Count submissions per form
+        const submissionCounts = countsData?.reduce((acc, submission) => {
+          acc[submission.form_id] = (acc[submission.form_id] || 0) + 1
+          return acc
+        }, {} as Record<string, number>) || {}
+
+        // Combine forms with their counts
+        return formsData.map(form => ({
+          ...form,
+          submission_count: submissionCounts[form.id] || 0
+        }))
+      }
     })
   }
 

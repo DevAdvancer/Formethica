@@ -21,6 +21,8 @@ function EditFormContent() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [mounted, setMounted] = useState(false)
+  // Store the raw text input for options
+  const [optionsText, setOptionsText] = useState<Record<string, string>>({})
 
   useEffect(() => {
     setMounted(true)
@@ -48,7 +50,17 @@ function EditFormContent() {
         setForm(data as unknown as Form)
         setTitle(data.title)
         setDescription(data.description || '')
-        setFields(data.fields as unknown as FormField[])
+        const formFields = data.fields as unknown as FormField[]
+        setFields(formFields)
+
+        // Initialize options text for existing fields
+        const initialOptionsText: Record<string, string> = {}
+        formFields.forEach(field => {
+          if (['select', 'radio', 'checkbox'].includes(field.type) && field.options) {
+            initialOptionsText[field.id] = field.options.join(', ')
+          }
+        })
+        setOptionsText(initialOptionsText)
       } catch (error) {
         console.error('Error fetching form:', error)
       } finally {
@@ -71,6 +83,11 @@ function EditFormContent() {
       options: []
     }
     setFields([...fields, newField])
+    // Initialize empty options text for new field
+    setOptionsText(prev => ({
+      ...prev,
+      [newField.id]: ''
+    }))
   }
 
   const updateField = (id: string, updates: Partial<FormField>) => {
@@ -81,11 +98,26 @@ function EditFormContent() {
 
   const removeField = (id: string) => {
     setFields(fields.filter(field => field.id !== id))
+    // Clean up options text for removed field
+    setOptionsText(prev => {
+      const newState = { ...prev }
+      delete newState[id]
+      return newState
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim() || fields.length === 0 || !form) return
+
+    console.log('Updating form with fields:', fields)
+
+    // Debug: Check options for select/radio/checkbox fields
+    fields.forEach(field => {
+      if (['select', 'radio', 'checkbox'].includes(field.type)) {
+        console.log(`Edit form - Field ${field.label} (${field.type}) options:`, field.options)
+      }
+    })
 
     setSaving(true)
     try {
@@ -105,6 +137,7 @@ function EditFormContent() {
         throw error
       }
 
+      console.log('Form updated successfully')
       showSuccess('Form Updated', 'Your form has been successfully updated!')
       setTimeout(() => router.push('/'), 1500)
     } catch (error) {
@@ -274,16 +307,43 @@ function EditFormContent() {
 
                   {['select', 'radio', 'checkbox'].includes(field.type) && (
                     <div className="mt-4">
-                      <label className="form-label">Options (one per line)</label>
-                      <textarea
-                        value={field.options?.join('\n') || ''}
-                        onChange={(e) => updateField(field.id, {
-                          options: e.target.value.split('\n').filter(opt => opt.trim())
-                        })}
+                      <label className="form-label">Options (comma separated)</label>
+                      <input
+                        type="text"
+                        value={optionsText[field.id] || ''}
+                        onChange={(e) => {
+                          const rawValue = e.target.value;
+
+                          // Update the text input state
+                          setOptionsText(prev => ({
+                            ...prev,
+                            [field.id]: rawValue
+                          }));
+
+                          // Parse and update the field options
+                          const options = rawValue
+                            .split(',')
+                            .map(opt => opt.trim())
+                            .filter(opt => opt !== '');
+
+                          updateField(field.id, { options });
+                        }}
                         className="form-input cursor-text"
-                        rows={3}
-                        placeholder="Option 1&#10;Option 2&#10;Option 3"
+                        placeholder="Option 1, Option 2, Option 3"
                       />
+                      <p className="text-xs text-white/50 mt-1">
+                        Separate options with commas (e.g., "Yes, No, Maybe")
+                      </p>
+                      {/* Show parsed options */}
+                      {field.options && field.options.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {field.options.map((option, idx) => (
+                            <span key={idx} className="px-2 py-1 bg-emerald-600/20 text-emerald-300 rounded text-xs">
+                              {option}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

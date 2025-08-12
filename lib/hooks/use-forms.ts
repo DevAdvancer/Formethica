@@ -30,8 +30,8 @@ export function useForms(): UseFormsReturn {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Optimized fetch function with caching
-  const fetchForms = useCallback(async (useCache = true) => {
+  // Optimized fetch function with caching and retry logic
+  const fetchForms = useCallback(async (useCache = true, retryCount = 0) => {
     // Wait for auth to resolve
     if (!user?.id) {
       setForms([])
@@ -55,17 +55,52 @@ export function useForms(): UseFormsReturn {
 
       setLoading(true)
 
-      // Use optimized single round-trip query
+      // Use optimized single round-trip query with fallback
       const formsWithCounts = await queryOptimizer.getFormsWithSubmissionCounts(user.id)
 
-      // Update cache
-      cacheManager.set(cacheKey, formsWithCounts, CACHE_DURATION)
+      // Validate the data structure
+      const validatedForms = formsWithCounts.map(form => ({
+        ...form,
+        submission_count: typeof form.submission_count === 'number' ? form.submission_count : 0
+      }))
 
-      setForms(formsWithCounts)
+      // Update cache
+      cacheManager.set(cacheKey, validatedForms, CACHE_DURATION)
+
+      setForms(validatedForms)
     } catch (err) {
-      console.error('Error fetching forms:', err)
-      setError(err instanceof Error ? err.message : 'Failed to fetch forms')
-      setForms([])
+      console.error('Error fetching forms (attempt', retryCount + 1, '):', err)
+
+      // Retry once on failure
+      if (retryCount === 0) {
+        console.log('Retrying forms fetch...')
+        setTimeout(() => fetchForms(false, 1), 1000)
+        return
+      }
+
+      // If retry also fails, try a basic query without counts
+      try {
+        console.log('Attempting basic forms query without counts...')
+        const { data: basicForms, error: basicError } = await supabase
+          .from('forms')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+
+        if (basicError) throw basicError
+
+        const formsWithZeroCounts = (basicForms || []).map(form => ({
+          ...form,
+          submission_count: 0
+        }))
+
+        setForms(formsWithZeroCounts)
+        setError('Some features may be limited due to a temporary issue')
+      } catch (basicErr) {
+        console.error('Basic forms query also failed:', basicErr)
+        setError(err instanceof Error ? err.message : 'Failed to fetch forms')
+        setForms([])
+      }
     } finally {
       setLoading(false)
     }
@@ -235,7 +270,7 @@ export function useForms(): UseFormsReturn {
 
   // Refetch function that bypasses cache
   const refetch = useCallback(async () => {
-    await fetchForms(false)
+    await fetchForms(false, 0)
   }, [fetchForms])
 
   // Initial fetch with safe guard and timeout to avoid indefinite loading
