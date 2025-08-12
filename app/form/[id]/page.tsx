@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Form, FormField } from '@/lib/types'
 import { CheckCircledIcon, ExclamationTriangleIcon, RocketIcon } from '@radix-ui/react-icons'
+import LoadingSpinner from '@/components/loading-spinner'
 
 export default function FormPage() {
   const params = useParams()
@@ -247,10 +248,7 @@ export default function FormPage() {
     return (
       <div className="page-content">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <div className="spinner h-8 w-8 mx-auto mb-4"></div>
-            <p className="text-white/60">Loading form...</p>
-          </div>
+          <LoadingSpinner size="md" text="Loading form..." />
         </div>
       </div>
     )

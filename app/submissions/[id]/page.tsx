@@ -9,6 +9,7 @@ import { Download, Eye, Trash2, AlertTriangle } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import { useConfirmation } from '@/lib/confirmation-context'
 import ProtectedRoute from '@/components/protected-route'
+import LoadingSpinner from '@/components/loading-spinner'
 import * as XLSX from 'xlsx'
 
 function SubmissionsContent() {
@@ -172,10 +173,7 @@ function SubmissionsContent() {
     return (
       <div className="page-content">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <div className="spinner h-8 w-8 mx-auto mb-4"></div>
-            <p className="text-white/60">Loading submissions...</p>
-          </div>
+          <LoadingSpinner size="md" text="Loading submissions..." />
         </div>
       </div>
     )

@@ -7,6 +7,7 @@ import { useConfirmation } from '@/lib/confirmation-context'
 import { useFormsFast as useForms } from '@/lib/hooks/use-forms-fast'
 import FormCard from '@/components/form-card'
 import ProtectedRoute from '@/components/protected-route'
+import LoadingSpinner from '@/components/loading-spinner'
 
 function DashboardContent() {
   const { user, userProfile } = useAuth()
@@ -220,11 +221,12 @@ function DashboardContent() {
     return (
       <div className="page-content">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <div className="spinner h-8 w-8 mx-auto mb-4"></div>
-            <p className="text-white/60">Loading your dashboard...</p>
-            <p className="text-white/40 text-sm mt-2">This should only take a moment</p>
-          </div>
+          <LoadingSpinner
+            size="md"
+            text="Loading your dashboard..."
+            className="mb-2"
+          />
+          <p className="text-white/40 text-sm text-center">This should only take a moment</p>
         </div>
       </div>
     )
