@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { Sparkles } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import { useConfirmation } from '@/lib/confirmation-context'
-import { useForms } from '@/lib/hooks/use-forms'
+import { useFormsFast as useForms } from '@/lib/hooks/use-forms-fast'
 import FormCard from '@/components/form-card'
 import ProtectedRoute from '@/components/protected-route'
 
@@ -223,6 +223,7 @@ function DashboardContent() {
           <div className="text-center">
             <div className="spinner h-8 w-8 mx-auto mb-4"></div>
             <p className="text-white/60">Loading your dashboard...</p>
+            <p className="text-white/40 text-sm mt-2">This should only take a moment</p>
           </div>
         </div>
       </div>
