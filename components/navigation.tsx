@@ -66,7 +66,7 @@ const Navigation = memo(function Navigation() {
             ) : user ? (
               <>
                 <a
-                  href="/"
+                  href="/dashboard"
                   className="text-white/80 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer"
                 >
                   Dashboard

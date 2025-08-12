@@ -21,10 +21,10 @@ function AuthPageContent() {
     }
   }, [searchParams])
 
-  // Redirect authenticated users to home page
+  // Redirect authenticated users to dashboard
   useEffect(() => {
     if (!loading && user) {
-      router.replace('/')
+      router.replace('/dashboard')
     }
   }, [user, loading, router])
 
