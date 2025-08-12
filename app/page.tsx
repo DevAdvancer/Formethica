@@ -68,29 +68,52 @@ function WelcomePage() {
 
           {/* Demo Preview */}
           <div className="card glow-emerald max-w-4xl mx-auto mb-20">
-            <div className="aspect-video bg-gradient-to-br from-emerald-900/20 to-orange-900/20 rounded-xl flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-20 h-20 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg
-                    className="w-10 h-10 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
+            <div className="aspect-video rounded-xl overflow-hidden">
+              <video
+                className="w-full h-full object-cover rounded-xl"
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls
+                preload="metadata">
+                <source src="/demo.mp4" type="video/mp4" />
+                {/* Fallback content for browsers that don't support video */}
+                <div className="w-full h-full bg-gradient-to-br from-emerald-900/20 to-orange-900/20 rounded-xl flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg
+                        className="w-10 h-10 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-semibold text-white mb-2">
+                      Interactive Demo
+                    </h3>
+                    <p className="text-white/70">
+                      Your browser doesn't support video playback
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-semibold text-white mb-2">
-                  Interactive Demo
-                </h3>
-                <p className="text-white/70">
-                  See how easy it is to create forms
-                </p>
-              </div>
+              </video>
+            </div>
+
+            {/* Video description below */}
+            <div className="mt-6 text-center">
+              <h3 className="text-lg font-semibold text-white mb-1">
+                Interactive Demo
+              </h3>
+              <p className="text-white/80 text-sm">
+                See how easy it is to create forms with FORMETHICA
+              </p>
             </div>
           </div>
         </div>
