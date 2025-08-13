@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Form, FormSubmission } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
-import { Download, Eye, Trash2, AlertTriangle } from 'lucide-react'
+import { Download, Eye, Trash2, AlertTriangle, Edit3, Save, X } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import { useConfirmation } from '@/lib/confirmation-context'
 import ProtectedRoute from '@/components/protected-route'
@@ -21,6 +21,9 @@ function SubmissionsContent() {
   const [loading, setLoading] = useState(true)
   const [selectedSubmission, setSelectedSubmission] = useState<FormSubmission | null>(null)
   const [deleting, setDeleting] = useState(false)
+  const [editingSubmission, setEditingSubmission] = useState<FormSubmission | null>(null)
+  const [editData, setEditData] = useState<Record<string, any>>({})
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     if (params.id && user) {
@@ -167,7 +170,100 @@ function SubmissionsContent() {
     }
   }
 
+  const handleEditSubmission = (submission: FormSubmission) => {
+    setEditingSubmission(submission)
 
+    // Initialize edit data with current submission data and fill empty fields
+    const initialData: Record<string, any> = {}
+
+    form.fields.forEach(field => {
+      const currentValue = submission.data[field.id]
+
+      // Handle different field types properly
+      if (field.type === 'checkbox') {
+        // Ensure checkbox values are arrays
+        initialData[field.id] = Array.isArray(currentValue) ? currentValue : (currentValue ? [currentValue] : [])
+      } else if (currentValue !== undefined && currentValue !== null && currentValue !== '') {
+        // Use existing value
+        initialData[field.id] = currentValue
+      } else {
+        // Set appropriate default for empty fields
+        switch (field.type) {
+          case 'number':
+            initialData[field.id] = ''
+            break
+          case 'checkbox':
+            initialData[field.id] = []
+            break
+          default:
+            initialData[field.id] = ''
+        }
+      }
+    })
+
+    setEditData(initialData)
+  }
+
+  const handleSaveEdit = async () => {
+    if (!editingSubmission || !form) return
+
+    setSaving(true)
+    try {
+      // Clean the data
+      const cleanedData: Record<string, any> = {}
+      form.fields.forEach(field => {
+        const value = editData[field.id]
+        if (field.type === 'checkbox') {
+          cleanedData[field.id] = Array.isArray(value) ? value : []
+        } else {
+          cleanedData[field.id] = value || ''
+        }
+      })
+
+      // Direct update with timeout
+      const updatePromise = supabase
+        .from('form_submissions')
+        .update({ data: cleanedData })
+        .eq('id', editingSubmission.id)
+
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Update timeout')), 10000)
+      })
+
+      await Promise.race([updatePromise, timeoutPromise])
+
+      // Update local state
+      setSubmissions(prev => prev.map(s =>
+        s.id === editingSubmission.id
+          ? { ...s, data: cleanedData }
+          : s
+      ))
+
+      if (selectedSubmission?.id === editingSubmission.id) {
+        setSelectedSubmission({ ...selectedSubmission, data: cleanedData })
+      }
+
+      setEditingSubmission(null)
+      setEditData({})
+      showSuccess('Submission Updated', 'The submission has been successfully updated.')
+    } catch (error) {
+      showError('Update Failed', 'Failed to update the submission. Please try again.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditingSubmission(null)
+    setEditData({})
+  }
+
+  const handleEditFieldChange = (fieldId: string, value: any) => {
+    setEditData(prev => ({
+      ...prev,
+      [fieldId]: value
+    }))
+  }
 
   if (loading) {
     return (
@@ -295,6 +391,14 @@ function SubmissionsContent() {
                           <Eye size={16} />
                         </button>
                         <button
+                          onClick={() => handleEditSubmission(submission)}
+                          className="text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+                          title="Edit Submission"
+                          disabled={saving}
+                        >
+                          <Edit3 size={16} />
+                        </button>
+                        <button
                           onClick={() => handleDeleteSubmission(submission.id)}
                           className="text-red-400 hover:text-red-300 transition-colors cursor-pointer"
                           title="Delete Submission"
@@ -368,8 +472,161 @@ function SubmissionsContent() {
         </div>
       )}
 
+      {/* Edit Submission Modal */}
+      {editingSubmission && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={handleCancelEdit} />
+          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="card glow-emerald">
+              <div className="flex justify-between items-center p-6 pb-4">
+                <h3 className="text-xl font-bold text-white">Edit Submission</h3>
+                <button
+                  onClick={handleCancelEdit}
+                  className="text-white/60 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X size={24} />
+                </button>
+              </div>
 
+              <div className="px-6 pb-6">
+                <div className="space-y-4">
+                  {form.fields.map((field) => (
+                    <div key={field.id}>
+                      <label className="form-label">
+                        {field.label}
+                        {field.required && <span className="text-red-400 ml-1">*</span>}
+                      </label>
 
+                      {field.type === 'text' && (
+                        <input
+                          type="text"
+                          value={editData[field.id] || ''}
+                          onChange={(e) => handleEditFieldChange(field.id, e.target.value)}
+                          className="form-input cursor-text"
+                          placeholder={field.placeholder}
+                        />
+                      )}
+
+                      {field.type === 'email' && (
+                        <input
+                          type="email"
+                          value={editData[field.id] || ''}
+                          onChange={(e) => handleEditFieldChange(field.id, e.target.value)}
+                          className="form-input cursor-text"
+                          placeholder={field.placeholder}
+                        />
+                      )}
+
+                      {field.type === 'number' && (
+                        <input
+                          type="number"
+                          value={editData[field.id] || ''}
+                          onChange={(e) => handleEditFieldChange(field.id, e.target.value)}
+                          className="form-input cursor-text"
+                          placeholder={field.placeholder}
+                        />
+                      )}
+
+                      {field.type === 'textarea' && (
+                        <textarea
+                          value={editData[field.id] || ''}
+                          onChange={(e) => handleEditFieldChange(field.id, e.target.value)}
+                          className="form-input cursor-text"
+                          rows={3}
+                          placeholder={field.placeholder}
+                        />
+                      )}
+
+                      {field.type === 'select' && (
+                        <select
+                          value={editData[field.id] || ''}
+                          onChange={(e) => handleEditFieldChange(field.id, e.target.value)}
+                          className="form-input cursor-pointer"
+                        >
+                          <option value="">Select an option</option>
+                          {field.options?.map((option, index) => (
+                            <option key={index} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+
+                      {field.type === 'radio' && (
+                        <div className="space-y-2">
+                          {field.options?.map((option, index) => (
+                            <label key={index} className="flex items-center cursor-pointer">
+                              <input
+                                type="radio"
+                                name={field.id}
+                                value={option}
+                                checked={editData[field.id] === option}
+                                onChange={(e) => handleEditFieldChange(field.id, e.target.value)}
+                                className="mr-2 cursor-pointer"
+                              />
+                              <span className="text-white/90">{option}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+
+                      {field.type === 'checkbox' && (
+                        <div className="space-y-2">
+                          {field.options?.map((option, index) => (
+                            <label key={index} className="flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                value={option}
+                                checked={(editData[field.id] || []).includes(option)}
+                                onChange={(e) => {
+                                  const currentValues = editData[field.id] || []
+                                  const newValues = e.target.checked
+                                    ? [...currentValues, option]
+                                    : currentValues.filter((v: string) => v !== option)
+                                  handleEditFieldChange(field.id, newValues)
+                                }}
+                                className="mr-2 cursor-pointer"
+                              />
+                              <span className="text-white/90">{option}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-white/10">
+                  <button
+                    onClick={handleCancelEdit}
+                    className="btn btn-secondary"
+                    disabled={saving}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveEdit}
+                    className="btn btn-primary glow-emerald"
+                    disabled={saving}
+                  >
+                    {saving ? (
+                      <>
+                        <div className="spinner h-4 w-4 mr-2"></div>
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save size={16} className="mr-1" />
+                        Save Changes
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       </div>
     </div>

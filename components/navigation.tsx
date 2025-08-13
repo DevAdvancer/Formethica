@@ -45,7 +45,7 @@ const Navigation = memo(function Navigation() {
       <div className="px-6">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <a href="/" className="flex items-center space-x-2 hover:scale-105 transition-transform cursor-pointer">
+            <a href={user ? "/dashboard" : "/"} className="flex items-center space-x-2 hover:scale-105 transition-transform cursor-pointer">
               <Image
                 src="/formethica-logo.svg"
                 alt="Formethica logo"

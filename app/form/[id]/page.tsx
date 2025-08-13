@@ -281,8 +281,8 @@ export default function FormPage() {
             <h1 className="text-3xl font-bold text-white mb-4">Thank You!</h1>
             <p className="text-white/80 text-lg">Your response has been submitted successfully.</p>
             <div className="mt-8">
-              <a href="/" className="btn btn-secondary">
-                ← Back to Home
+              <a href="/dashboard" className="btn btn-secondary">
+                ← Back to Dashboard
               </a>
             </div>
           </div>

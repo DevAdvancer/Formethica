@@ -112,6 +112,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Setup session management for new sessions
         if (event === 'SIGNED_IN' && session) {
           SessionManager.setupAutoRefresh()
+
+          // Redirect to dashboard after successful login
+          if (typeof window !== 'undefined' && window.location.pathname === '/') {
+            window.location.href = '/dashboard'
+          }
         }
       } else {
         setUserProfile(null)
