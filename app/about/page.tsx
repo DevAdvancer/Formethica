@@ -227,7 +227,7 @@ export default function AboutPage() {
                 </p>
                 <p>
                   Today, Formethica serves thousands of users worldwide, from
-                  solo entrepreneurs to Fortune 500 companies. We're proud to be
+                  solo entrepreneurs to Fortune 100+ users. We're proud to be
                   helping businesses collect data, generate leads, and connect
                   with their customers more effectively.
                 </p>
