@@ -1,34 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import OptimizedImage from "@/components/optimized-image";
-import { useAuthModal } from "@/lib/auth-modal-context";
 
 export default function HomePage() {
-  const { openModal } = useAuthModal();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-
-    // Check URL parameters to auto-open auth modal
-    const urlParams = new URLSearchParams(window.location.search);
-    const authParam = urlParams.get("auth");
-
-    if (authParam === "login") {
-      openModal("sign_in");
-      // Clean up URL
-      window.history.replaceState({}, "", "/");
-    } else if (authParam === "signup") {
-      openModal("sign_up");
-      // Clean up URL
-      window.history.replaceState({}, "", "/");
-    }
-  }, [openModal, mounted]);
+  // Remove the URL parameter handling since we're using direct links now
 
   return (
     <div className="page-content-hero">
@@ -49,16 +24,16 @@ export default function HomePage() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-20">
-            <button
-              onClick={() => openModal("sign_up")}
-              className="btn btn-primary text-xl px-12 py-5 glow-emerald">
+            <a
+              href="/auth?type=signup"
+              className="btn btn-primary text-xl px-12 py-5 glow-emerald no-underline">
               Start Creating Free
-            </button>
-            <button
-              onClick={() => openModal("sign_in")}
-              className="btn btn-secondary text-xl px-12 py-5">
+            </a>
+            <a
+              href="/auth?type=signin"
+              className="btn btn-secondary text-xl px-12 py-5 no-underline">
               Sign In
-            </button>
+            </a>
           </div>
 
           {/* Demo Preview */}
@@ -66,7 +41,6 @@ export default function HomePage() {
             <div className="aspect-video rounded-xl overflow-hidden">
               <video
                 className="w-full h-full object-cover rounded-xl"
-                autoPlay
                 loop
                 muted
                 playsInline
@@ -395,16 +369,16 @@ export default function HomePage() {
               collection needs
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => openModal("sign_up")}
-                className="btn btn-primary text-xl px-10 py-4 glow-emerald">
+              <a
+                href="/auth?type=signup"
+                className="btn btn-primary text-xl px-10 py-4 glow-emerald no-underline">
                 Create Your First Form
-              </button>
-              <button
-                onClick={() => openModal("sign_in")}
-                className="btn btn-secondary text-xl px-10 py-4">
+              </a>
+              <a
+                href="/auth?type=signin"
+                className="btn btn-secondary text-xl px-10 py-4 no-underline">
                 Sign In
-              </button>
+              </a>
             </div>
           </div>
         </div>

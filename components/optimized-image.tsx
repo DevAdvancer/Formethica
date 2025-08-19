@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, memo } from 'react'
+import { useState, useEffect, memo } from 'react'
 import Image from 'next/image'
 
 interface OptimizedImageProps {
@@ -26,6 +26,11 @@ const OptimizedImage = memo(function OptimizedImage({
 }: OptimizedImageProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const handleLoad = () => {
     setIsLoading(false)
@@ -34,6 +39,23 @@ const OptimizedImage = memo(function OptimizedImage({
   const handleError = () => {
     setIsLoading(false)
     setHasError(true)
+  }
+
+  // Prevent hydration mismatch by not showing loading states until mounted
+  if (!isMounted) {
+    return (
+      <Image
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        className={className}
+        priority={priority}
+        placeholder={placeholder}
+        blurDataURL={blurDataURL}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      />
+    )
   }
 
   if (hasError) {
