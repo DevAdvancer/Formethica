@@ -17,7 +17,7 @@ export interface UserProfile {
 export class UserService {
   static async getOrCreateUser(email: string): Promise<UserProfile | null> {
     try {
-      // First, try to get existing user
+      // Try to get existing user
       const { data: existingUser, error: fetchError } = await supabase
         .from('users')
         .select('*')
@@ -34,37 +34,44 @@ export class UserService {
         }
       }
 
-      // If user doesn't exist, create one with a random username
+      // If user doesn't exist, return null (user profile should be created during signup)
       if (fetchError?.code === 'PGRST116') { // No rows returned
-        const newUsername = generateUsername()
-
-        const { data: newUser, error: createError } = await supabase
-          .from('users')
-          .insert({
-            email,
-            username: newUsername
-          })
-          .select()
-          .single()
-
-        if (createError) {
-          console.error('Error creating user:', createError)
-          return null
-        }
-
-        return {
-          id: newUser.id,
-          email: newUser.email,
-          username: newUser.username,
-          canChangeUsername: true,
-          usernameChangedAt: null
-        }
+        return null
       }
 
       console.error('Error fetching user:', fetchError)
       return null
     } catch (error) {
       console.error('Unexpected error in getOrCreateUser:', error)
+      return null
+    }
+  }
+
+  static async createUser(email: string, username: string): Promise<UserProfile | null> {
+    try {
+      const { data: newUser, error: createError } = await supabase
+        .from('users')
+        .insert({
+          email,
+          username
+        })
+        .select()
+        .single()
+
+      if (createError) {
+        console.error('Error creating user:', createError)
+        return null
+      }
+
+      return {
+        id: newUser.id,
+        email: newUser.email,
+        username: newUser.username,
+        canChangeUsername: true,
+        usernameChangedAt: null
+      }
+    } catch (error) {
+      console.error('Unexpected error in createUser:', error)
       return null
     }
   }

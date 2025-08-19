@@ -13,9 +13,12 @@ const nouns = [
 export function generateUsername(): string {
   const adjective = adjectives[Math.floor(Math.random() * adjectives.length)]
   const noun = nouns[Math.floor(Math.random() * nouns.length)]
-  const number = Math.floor(Math.random() * 1000)
+  const number = Math.floor(Math.random() * 10000) // Increased range for less collisions
 
-  return `${adjective}${noun}${number}`
+  // Add a random suffix for extra uniqueness
+  const suffix = nanoid(3) // 3 character random string
+
+  return `${adjective}${noun}${number}${suffix}`
 }
 
 export function getStoredUsername(email: string): string {
